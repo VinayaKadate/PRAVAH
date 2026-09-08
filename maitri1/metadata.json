@@ -1,0 +1,6 @@
+{
+  "name": "MAITRI 2.0 - Maharashtra Single Window Clearance System",
+  "description": "Maharashtra Industry, Trade and Investment Facilitation Cell (MAITRI 2.0) - Single Window Clearance System for industrial approvals, incentives, tracking and support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
