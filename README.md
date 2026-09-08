@@ -42,18 +42,50 @@ While the Database integration is being finalized, **other team members can imme
 
 ---
 
-## How to run locally
+## 🛠️ How to Run Locally
 
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
+### Prerequisites
+1. **Node.js**: Download and install from [nodejs.org](https://nodejs.org/) (needed for the frontend).
+2. **Python**: Download and install Python 3.10+ from [python.org/downloads/](https://www.python.org/downloads/). During installation, **make sure to check the box that says "Add python.exe to PATH"**.
 
-**Backend:**
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
+### Step 1: Start the Backend (FastAPI)
+The backend requires Python and runs the API that the frontend connects to.
+1. Open a terminal and navigate to the backend folder:
+   ```bash
+   cd backend
+   ```
+2. (Optional but recommended) Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On Mac/Linux:
+   source venv/bin/activate
+   ```
+3. Install the required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Start the server using Uvicorn:
+   ```bash
+   python -m uvicorn app.main:app --reload
+   ```
+   *The backend should now be running at `http://127.0.0.1:8000`.*
+
+### Step 2: Start the Frontend (React)
+The frontend requires Node.js and npm.
+1. Open a **second, separate terminal** and navigate to the frontend folder:
+   ```bash
+   cd frontend
+   ```
+2. Install the necessary packages (including Axios):
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+   *The frontend should now be running at `http://localhost:5173`. Open this URL in your browser to view the application!*
+
+> **Note on Environment Variables**: We are currently in the development phase, so the `.env` and `firebase-credentials.json` files have intentionally been pushed to the repository so you can clone and run it immediately. Before deploying to production, these must be added to `.gitignore` and removed from the repository.

@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings
+from app.api.router import api_router
 
 app = FastAPI(
     title="MAITRI Portal API",
@@ -7,14 +9,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configure CORS so the React frontend can communicate with this API
+# Configure CORS
+origins = [origin.strip() for origin in settings.CORS_ORIGINS.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # Vite dev server
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include the main API router
+app.include_router(api_router, prefix="/api")
 
 @app.get("/")
 def root():

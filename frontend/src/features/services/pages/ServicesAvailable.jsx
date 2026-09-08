@@ -1,12 +1,22 @@
-import React, { useState } from "react";
-import { Search, CircleAlert, ChevronRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Search, CircleAlert, ChevronRight, Loader2 } from "lucide-react";
 import { SectionHead } from "../../../components/common/SectionHead";
 import { C } from "../../../constants/theme";
-import { SERVICE_GROUPS } from "../../../constants/mockData";
+import apiClient from "../../../api/client";
 
 export function ServicesAvailable() {
   const [q, setQ] = useState("");
-  const groups = SERVICE_GROUPS.filter(
+  const [serviceGroups, setServiceGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiClient.get("/services/")
+      .then(res => setServiceGroups(res.data.data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const groups = serviceGroups.filter(
     (g) =>
       g.dept.toLowerCase().includes(q.toLowerCase()) ||
       g.items.some((i) => i.toLowerCase().includes(q.toLowerCase()))
@@ -31,7 +41,12 @@ export function ServicesAvailable() {
           />
         </div>
 
-        {groups.length === 0 ? (
+        {loading ? (
+          <div className="p-10 text-center flex flex-col items-center justify-center">
+            <Loader2 className="animate-spin mb-2" color={C.saffron} size={32} />
+            <p className="text-sm" style={{ color: C.slate }}>Loading services...</p>
+          </div>
+        ) : groups.length === 0 ? (
           <div className="p-10 rounded text-center" style={{ background: C.white, border: `1px solid ${C.line}` }}>
             <CircleAlert size={28} color={C.slate} className="mx-auto mb-3" />
             <p className="text-sm" style={{ color: C.slate }}>

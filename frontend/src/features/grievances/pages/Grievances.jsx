@@ -1,15 +1,47 @@
-import React, { useState } from "react";
-import { Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Check, Loader2 } from "lucide-react";
 import { SectionHead } from "../../../components/common/SectionHead";
 import { Field } from "../../../components/common/Field";
 import { Btn } from "../../../components/common/Btn";
 import { C, inputCls, inputStyle } from "../../../constants/theme";
-import { SERVICE_GROUPS } from "../../../constants/mockData";
+import apiClient from "../../../api/client";
 
 export function Grievances() {
   const [f, setF] = useState({ name: "", email: "", dept: "", appId: "", detail: "" });
   const [sent, setSent] = useState(false);
+  const [depts, setDepts] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    apiClient.get("/services/")
+      .then(res => setDepts(res.data.data.map(g => g.dept)))
+      .catch(err => console.error("Failed to load departments"));
+  }, []);
+
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+
+  const submitGrievance = async () => {
+    if (!f.name || !f.email || !f.dept || !f.detail) {
+      setError("Please fill out all required fields.");
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      await apiClient.post("/grievances/", {
+        name: f.name,
+        email: f.email,
+        department: f.dept,
+        issue: f.detail
+      });
+      setSent(true);
+    } catch (err) {
+      setError("Failed to submit grievance. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (sent) {
     return (
@@ -43,6 +75,7 @@ export function Grievances() {
           sub="Use this for delays past the statutory timeline, repeated queries on the same document, or a rejection you believe is unfounded."
         />
         <div className="p-6 rounded" style={{ background: C.white, border: `1px solid ${C.line}` }}>
+          {error && <p className="text-sm text-red-600 mb-4 bg-red-50 p-2 rounded border border-red-200">{error}</p>}
           <div className="grid sm:grid-cols-2 gap-x-5">
             <Field label="Your name">
               <input value={f.name} onChange={set("name")} className={inputCls} style={inputStyle} />
@@ -53,7 +86,7 @@ export function Grievances() {
             <Field label="Department concerned">
               <select value={f.dept} onChange={set("dept")} className={inputCls} style={inputStyle}>
                 <option value="">Select a department</option>
-                {SERVICE_GROUPS.map((g) => <option key={g.dept} value={g.dept}>{g.dept}</option>)}
+                {depts.map((d) => <option key={d} value={d}>{d}</option>)}
               </select>
             </Field>
             <Field label="Application number" hint="Optional">
@@ -63,7 +96,10 @@ export function Grievances() {
           <Field label="What happened" hint="Dates, officer designation and what you were told help resolve it faster.">
             <textarea value={f.detail} onChange={set("detail")} rows={5} className={inputCls} style={inputStyle} />
           </Field>
-          <Btn variant="navy" onClick={() => setSent(true)} className="w-full">Submit grievance</Btn>
+          <Btn variant="navy" onClick={submitGrievance} className="w-full flex items-center justify-center gap-2">
+            {submitting && <Loader2 className="animate-spin" size={16} />}
+            Submit grievance
+          </Btn>
         </div>
       </div>
     </div>

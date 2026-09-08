@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Play, Check, Bell, FileText, ChevronRight } from "lucide-react";
+import { Search, Play, Check, Bell, FileText, ChevronRight, Landmark, FileCheck, Calculator, MessageSquare, Bot, Headphones } from "lucide-react";
 import { SectionHead } from "../../../components/common/SectionHead";
 import { Btn } from "../../../components/common/Btn";
 import { C, inputCls, inputStyle } from "../../../constants/theme";
 import { T } from "../../../constants/translations";
-import { STATS, FEATURES } from "../../../constants/mockData";
 import { useCountUp } from "../../../hooks/useCountUp";
+import apiClient from "../../../api/client";
+
+const FEATURES = [
+  { icon: FileCheck, title: "Single-window approvals", body: "One application, one set of documents. The portal routes your file to every department that has to sign off on it." },
+  { icon: Clock, title: "Desk-level tracking", body: "See which officer is holding your file, for how long, and what the statutory timeline says it should take." },
+  { icon: Calculator, title: "Incentive calculator", body: "Enter your investment and location to see the capital subsidy, SGST refund and duty exemptions you qualify for." },
+  { icon: MessageSquare, title: "Grievance redressal", body: "Raise an issue against any department. Unresolved cases escalate automatically up the chain." },
+  { icon: Bot, title: "AI assistant", body: "Ask about eligibility, documents or timelines at any hour and get an answer in plain language." },
+  { icon: Headphones, title: "Investor handholding", body: "A relationship manager from first enquiry through land, power, water and commissioning." },
+];
+
+import { Clock } from "lucide-react"; // moved up
 
 function Hero({ lang }) {
   const t = T[lang];
@@ -60,9 +71,10 @@ function Hero({ lang }) {
 
 function Stat({ s, run }) {
   const n = useCountUp(s.value, run);
+  const Icon = s.icon;
   return (
     <div className="text-center">
-      <div className="flex justify-center mb-2 opacity-90"><s.icon size={24} color={C.navyDeep} /></div>
+      <div className="flex justify-center mb-2 opacity-90"><Icon size={24} color={C.navyDeep} /></div>
       <div className="text-3xl font-black tabular-nums" style={{ color: C.navyDeep }}>
         {n}{s.suffix}
       </div>
@@ -71,13 +83,32 @@ function Stat({ s, run }) {
   );
 }
 
+const STAT_ICONS = [FileCheck, Landmark, FileText, Check];
+
 function StatsBand() {
+  const [stats, setStats] = useState([]);
+
+  useEffect(() => {
+    apiClient.get("/dashboard/stats")
+      .then(res => {
+        // Map the backend data to our specific icons
+        const mappedStats = res.data.stats.map((s, i) => ({
+          ...s,
+          icon: STAT_ICONS[i] || FileCheck
+        }));
+        setStats(mappedStats);
+      })
+      .catch(err => console.error("Failed to load stats"));
+  }, []);
+
   return (
     <div style={{ background: C.saffron, borderBottom: `4px solid ${C.navy}` }} className="px-4 py-8 relative z-20 shadow-lg">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {STATS.map((s, i) => (
+      <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 min-h-[100px]">
+        {stats.length > 0 ? stats.map((s, i) => (
           <Stat key={i} s={s} run={true} />
-        ))}
+        )) : (
+          <div className="col-span-4 text-center text-white/50 text-sm">Loading statistics...</div>
+        )}
       </div>
     </div>
   );

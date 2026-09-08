@@ -3,22 +3,27 @@ import { Loader2, CircleAlert, Check, Clock } from "lucide-react";
 import { SectionHead } from "../../../components/common/SectionHead";
 import { Btn } from "../../../components/common/Btn";
 import { C } from "../../../constants/theme";
-import { TRACK_STAGES } from "../../../constants/mockData";
+import apiClient from "../../../api/client";
 
 export function ServicesApplied() {
   const [id, setId] = useState("");
   const [state, setState] = useState("idle"); 
-  const [stage, setStage] = useState(2);
+  const [trackingData, setTrackingData] = useState(null);
 
-  const search = () => {
+  const search = async () => {
     const v = id.trim();
-    if (!v) return;
+    if (!v || v.length < 6) {
+      setState("notfound");
+      return;
+    }
     setState("loading");
-    setTimeout(() => {
-      if (v.length < 6) { setState("notfound"); return; }
-      setStage((v.charCodeAt(v.length - 1) % 4) + 1);
+    try {
+      const res = await apiClient.get(`/applications/${v}/track`);
+      setTrackingData(res.data.tracking_stages);
       setState("found");
-    }, 700);
+    } catch (err) {
+      setState("notfound");
+    }
   };
 
   return (
@@ -61,7 +66,7 @@ export function ServicesApplied() {
           </div>
         )}
 
-        {state === "found" && (
+        {state === "found" && trackingData && (
           <div className="rounded overflow-hidden" style={{ background: C.white, border: `1px solid ${C.line}` }}>
             <div className="p-6 grid sm:grid-cols-3 gap-4" style={{ borderBottom: `1px solid ${C.line}` }}>
               {[
@@ -77,28 +82,28 @@ export function ServicesApplied() {
             </div>
 
             <div className="p-6">
-              {TRACK_STAGES.map((s, i) => {
-                const done = i < stage;
-                const active = i === stage;
-                const color = done ? C.green : active ? C.saffron : C.line;
+              {trackingData.map((s, i) => {
+                const isCompleted = s.status === "completed";
+                const active = s.status === "in_progress";
+                const color = isCompleted ? C.green : active ? C.saffron : C.line;
                 return (
                   <div key={s.name} className="flex gap-4">
                     <div className="flex flex-col items-center">
                       <div
                         className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                        style={{ background: done || active ? color : C.white, border: `2px solid ${color}` }}
+                        style={{ background: isCompleted || active ? color : C.white, border: `2px solid ${color}` }}
                       >
-                        {done
+                        {isCompleted
                           ? <Check size={15} color={C.white} />
                           : <span className="text-xs font-bold" style={{ color: active ? C.white : C.slate }}>{i + 1}</span>}
                       </div>
-                      {i < TRACK_STAGES.length - 1 && (
-                        <div className="w-0.5 flex-1 my-1" style={{ background: done ? C.green : C.line, minHeight: "2.25rem" }} />
+                      {i < trackingData.length - 1 && (
+                        <div className="w-0.5 flex-1 my-1" style={{ background: isCompleted ? C.green : C.line, minHeight: "2.25rem" }} />
                       )}
                     </div>
                     <div className="pb-6 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-semibold" style={{ color: done || active ? C.ink : C.slate }}>
+                        <span className="text-sm font-semibold" style={{ color: isCompleted || active ? C.ink : C.slate }}>
                           {s.name}
                         </span>
                         {active && (
@@ -108,7 +113,7 @@ export function ServicesApplied() {
                         )}
                       </div>
                       <p className="text-sm mt-0.5" style={{ color: C.slate }}>{s.desc}</p>
-                      {(done || active) && (
+                      {(isCompleted || active) && (
                         <p className="text-xs mt-1" style={{ color: C.slate }}>
                           Day {s.days} · statutory limit {s.days + 7} days
                         </p>

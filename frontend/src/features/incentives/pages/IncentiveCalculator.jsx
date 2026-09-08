@@ -1,47 +1,64 @@
-import React, { useState } from "react";
-import { Calculator, CircleAlert, Percent, IndianRupee, MapPin } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Calculator, CircleAlert, Percent, IndianRupee, MapPin, Loader2 } from "lucide-react";
 import { SectionHead } from "../../../components/common/SectionHead";
 import { Field } from "../../../components/common/Field";
 import { Btn } from "../../../components/common/Btn";
 import { C, inr, inputCls, inputStyle } from "../../../constants/theme";
-import { TALUKA_CAT, SECTORS } from "../../../constants/mockData";
+import apiClient from "../../../api/client";
 
 export function IncentiveCalculator() {
+  const [params, setParams] = useState(null);
   const [invest, setInvest] = useState("50");
   const [sector, setSector] = useState("msme");
   const [cat, setCat] = useState("D");
   const [jobs, setJobs] = useState("120");
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const compute = () => {
+  useEffect(() => {
+    apiClient.get("/incentives/params")
+      .then(res => setParams(res.data))
+      .catch(err => console.error(err));
+  }, []);
+
+  const compute = async () => {
     const cr = parseFloat(invest) || 0;
     const emp = parseInt(jobs) || 0;
-    const catRow = TALUKA_CAT.find((c) => c.code === cat);
-    const sec = SECTORS.find((s) => s.key === sector);
+    
     if (cr <= 0) { setResult({ error: "Enter the eligible fixed capital investment to continue." }); return; }
 
-    const ceilingPct = Math.max(0, Math.min(120, catRow.ceiling + sec.bump));
-    const ceiling = (cr * ceilingPct) / 100;
-    const capital = Math.min(ceiling * 0.35, cr * 0.2);
-    const sgst = ceiling * 0.4;
-    const interest = Math.min(cr * 0.05, ceiling * 0.15);
-    const power = emp * 0.005;
-    const stamp = cr * 0.006;
-    const total = capital + sgst + interest + power + stamp;
-
-    setResult({
-      ceilingPct, ceiling, capital, sgst, interest, power, stamp, total,
-      years: catRow.years, catLabel: catRow.label, secLabel: sec.label, cr, emp,
-    });
+    setLoading(true);
+    try {
+      const res = await apiClient.post("/incentives/calculate", {
+        sector: sector,
+        taluka_category: cat,
+        investment: cr,
+        employment: emp
+      });
+      setResult(res.data);
+    } catch (err) {
+      setResult({ error: "Failed to calculate incentives. Please try again." });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const rows = result && !result.error ? [
+  const rows = result && !result.error && result.total ? [
     { k: "Capital subsidy on fixed assets", v: result.capital },
     { k: "SGST refund on local sales", v: result.sgst },
     { k: "Interest subsidy on term loan", v: result.interest },
     { k: "Electricity duty exemption", v: result.power },
     { k: "Stamp duty exemption", v: result.stamp },
   ] : [];
+
+  if (!params) {
+    return (
+      <div className="px-4 py-32 flex flex-col items-center justify-center min-h-[60vh]">
+        <Loader2 className="animate-spin mb-4" color={C.navy} size={40} />
+        <p className="text-slate-500">Loading calculator parameters...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 py-12">
@@ -62,12 +79,12 @@ export function IncentiveCalculator() {
             </Field>
             <Field label="Sector">
               <select value={sector} onChange={(e) => setSector(e.target.value)} className={inputCls} style={inputStyle}>
-                {SECTORS.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
+                {params.sectors.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
               </select>
             </Field>
             <Field label="Taluka classification" hint="As notified under PSI 2019">
               <select value={cat} onChange={(e) => setCat(e.target.value)} className={inputCls} style={inputStyle}>
-                {TALUKA_CAT.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+                {params.taluka_categories.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
               </select>
             </Field>
             <Field label="Direct employment generated">
@@ -76,7 +93,10 @@ export function IncentiveCalculator() {
                 className={inputCls} style={inputStyle} min="0"
               />
             </Field>
-            <Btn variant="navy" onClick={compute} className="w-full mt-2">Calculate incentives</Btn>
+            <Btn variant="navy" onClick={compute} className="w-full mt-2 flex items-center justify-center gap-2">
+              {loading && <Loader2 className="animate-spin" size={16} />}
+              Calculate incentives
+            </Btn>
           </div>
 
           <div className="lg:col-span-3">
@@ -96,7 +116,7 @@ export function IncentiveCalculator() {
               </div>
             )}
 
-            {result && !result.error && (
+            {result && !result.error && result.total && (
               <div className="rounded overflow-hidden" style={{ background: C.white, border: `1px solid ${C.line}` }}>
                 <div className="p-6" style={{ background: C.navyDeep }}>
                   <div className="text-sm" style={{ color: "#A9C5DC" }}>Indicative incentive over {result.years} years</div>
