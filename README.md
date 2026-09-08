@@ -2,49 +2,43 @@
 
 This repository contains the full-stack monorepo for the PRAVAH / UdyogSetu portal.
 
-## Current Project Status: API Integration Phase
+## 🚀 Current Project Status: Backend Database Integration
 
-We have successfully built the **frontend UI architecture** using React and Tailwind CSS. The UI currently relies on hardcoded mock data for demonstrations. 
+We have successfully built the **frontend UI architecture** using React and Tailwind CSS, and we have scaffolded the **FastAPI backend**. We are currently in the process of integrating the real Database to replace the frontend's `mockData.js`.
 
-Our **next phase** is to build the backend (FastAPI) APIs to replace this mock data and make the frontend fully dynamic, without adding any new frontend screens right now. 
+### ✅ Phases Completed (Frontend + Basic API Routes)
+The following features currently have their UI built and their backend API routes scaffolded (awaiting Database connection):
+* **Phase 5:** Service Catalogue, Applications & Tracking (Services Available, Services Applied)
+* **Phase 7:** Support & Grievances (Incentive Calculator, Grievance Submission)
+* **Phase 9:** Dashboard (Investor Analytics, Charts)
+* **Phase 18:** AI Query Assistant (ChatBot widget)
 
 ---
 
-## Required APIs for the Current Frontend 
+## 👥 Task Delegation: What Other Team Members Should Start
 
-To make the existing frontend components fully functional, we need to build the following APIs based on the PRD Phase document:
+While the Database integration is being finalized, **other team members can immediately start building the Frontend UI and Backend APIs for the following unstarted phases:**
 
-### 1. Service Catalogue (Phase 5)
-* **Endpoint:** `GET /api/services`
-* **Purpose:** Returns the `SERVICE_GROUPS` (departments and their available services).
-* **Used in:** Services Available page.
+### 1. Phase 1: Onboarding & Identity
+* **What to build:** Registration form (OTP, Business Profile), Login screen, and JWT Auth backend logic.
+* **Why it's important:** Every other module depends on having a logged-in user and a Business Profile.
 
-### 2. Application Tracking (Phase 5)
-* **Endpoint:** `GET /api/applications/{application_id}/track`
-* **Purpose:** Returns the current timeline and progress milestones (`TRACK_STAGES`).
-* **Used in:** Services Applied (Tracking Modal).
+### 2. Phase 2: Factory & Plot Setup
+* **What to build:** Forms to add/edit Factory Units and MIDC Plot Registrations.
+* **Why it's important:** Services applications need to be linked to a specific Factory Unit.
 
-### 3. Incentive Calculator (Phase 7)
-* **Endpoint:** `GET /api/incentives/params`
-* **Purpose:** Returns the lookup data for the calculator (`TALUKA_CAT` and `SECTORS`).
-* **Endpoint:** `POST /api/incentives/calculate`
-* **Purpose:** Takes the user's investment input and returns the estimated eligible subsidies.
-* **Used in:** Incentive Calculator page.
+### 3. Phase 3: Document Repository
+* **What to build:** "Document Drive" UI for uploading and managing certificates/documents.
+* **Why it's important:** We need this before we can attach real documents to applications.
 
-### 4. Grievance Redressal (Phase 7)
-* **Endpoint:** `POST /api/grievances`
-* **Purpose:** Accepts grievance submissions (Name, Email, Dept, Issue).
-* **Used in:** Grievances page.
+### 4. Phase 4: Investor Wizard
+* **What to build:** Multi-section questionnaire that derives a list of required approvals.
+* **Why it's important:** It's the core flow for a new investor to figure out what they need to apply for.
 
-### 5. Dashboard Analytics (Phase 9)
-* **Endpoint:** `GET /api/dashboard/stats`
-* **Purpose:** Returns aggregated data for `STATS`, `MONTHLY` trends, `REGION_SPLIT`, and `SECTOR_INVEST`.
-* **Used in:** Dashboard page charts and counters.
+### 5. Phase 6: CAF & Payment History
+* **What to build:** Common Application Form (CAF) generation and a Payment History table.
 
-### 6. AI Query Assistant (Phase 18)
-* **Endpoint:** `POST /api/chat`
-* **Purpose:** Accepts the user's prompt and returns the AI's response.
-* **Used in:** ChatBot floating widget.
+*(Please refer to `phases (1).md` in the root for the detailed PRD and "Definition of Done" for each phase!)*
 
 ---
 
