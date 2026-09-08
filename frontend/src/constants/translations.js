@@ -1,0 +1,36 @@
+export const T = {
+  en: {
+    govt: "Government of Maharashtra",
+    dept: "Industries, Energy, Labour & Mining Department",
+    brand: "MAITRI",
+    brandFull: "Maharashtra Industry, Trade and Investment Facilitation Cell",
+    nav: {
+      home: "Home", about: "About Us", services: "Services", track: "Track Application",
+      calc: "Incentive Calculator", grievance: "Grievance", dashboard: "Dashboard", contact: "Contact Us",
+    },
+    login: "Login", register: "New investor registration",
+    heroKicker: "Single Window Clearance System",
+    heroTitle: "Every approval your project needs, on one portal.",
+    heroSub: "Apply for licences, permissions and registrations across 16 departments, track each file to the officer's desk, and claim the incentives you qualify for.",
+    searchPh: "Search a service — factory licence, fire NOC, consent to establish…",
+    searchBtn: "Search services",
+    quick: "Frequently used",
+  },
+  mr: {
+    govt: "महाराष्ट्र शासन",
+    dept: "उद्योग, ऊर्जा, कामगार व खनिकर्म विभाग",
+    brand: "मैत्री",
+    brandFull: "Maharashtra उद्योग, व्यापार व गुंतवणूक सुविधा कक्ष",
+    nav: {
+      home: "मुख्यपृष्ठ", about: "आमच्याविषयी", services: "सेवा", track: "अर्ज स्थिती",
+      calc: "प्रोत्साहन गणक", grievance: "तक्रार", dashboard: "डॅशबोर्ड", contact: "संपर्क",
+    },
+    login: "लॉगिन", register: "नवीन गुंतवणूकदार नोंदणी",
+    heroKicker: "एक खिडकी मंजुरी प्रणाली",
+    heroTitle: "प्रकल्पासाठी लागणाऱ्या सर्व मंजुऱ्या, एकाच पोर्टलवर.",
+    heroSub: "१६ विभागांच्या परवानग्या व नोंदणीसाठी अर्ज करा, प्रत्येक फाईल अधिकाऱ्याच्या टेबलपर्यंत ट्रॅक करा आणि पात्र प्रोत्साहन मिळवा.",
+    searchPh: "सेवा शोधा — कारखाना परवाना, अग्निशमन ना-हरकत…",
+    searchBtn: "सेवा शोधा",
+    quick: "वारंवार वापरल्या जाणाऱ्या",
+  },
+};
