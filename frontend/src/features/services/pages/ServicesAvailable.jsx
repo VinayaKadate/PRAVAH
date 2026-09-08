@@ -67,7 +67,13 @@ export function ServicesAvailable() {
                   {g.items.map((i) => (
                     <div key={i} className="flex items-center justify-between py-2" style={{ borderBottom: `1px solid ${C.bg}` }}>
                       <span className="text-sm" style={{ color: C.ink }}>{i}</span>
-                      <button className="text-xs font-semibold" style={{ color: C.saffron }}>Apply</button>
+                      <button 
+                        className="text-xs font-semibold" 
+                        style={{ color: C.saffron }}
+                        onClick={() => window.location.href = '/apply'}
+                      >
+                        Apply
+                      </button>
                     </div>
                   ))}
                   <button className="mt-3 text-xs font-semibold flex items-center gap-1" style={{ color: C.navy }}>

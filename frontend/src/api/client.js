@@ -21,3 +21,28 @@ apiClient.interceptors.request.use(
 );
 
 export default apiClient;
+
+import { auth } from '../firebase';
+
+export const validateDocument = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const token = auth.currentUser ? await auth.currentUser.getIdToken() : null;
+  const headers = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  const response = await fetch('http://localhost:8000/api/documents/validate', {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || 'Document validation failed');
+  }
+  return response.json();
+};

@@ -5,3 +5,7 @@ pydantic-settings>=2.2.1
 firebase-admin
 passlib[bcrypt]
 pyjwt
+easyocr
+pillow
+python-multipart
+pymupdf

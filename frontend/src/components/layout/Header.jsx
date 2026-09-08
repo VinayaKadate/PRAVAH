@@ -5,12 +5,21 @@ import { C } from "../../constants/theme";
 import { T } from "../../constants/translations";
 import { Btn } from "../common/Btn";
 import { AccessibilityBar } from "../accessibility/AccessibilityBar";
+import { useAuth } from "../../contexts/AuthContext";
+import { auth } from "../../firebase";
+import { signOut } from "firebase/auth";
 
 export function Header({ lang, setLang, a11y, setA11y }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser } = useAuth();
   const t = T[lang];
+  
+  const handleSignOut = () => {
+    signOut(auth);
+    navigate('/');
+  };
   
   const links = [
     ["", t.nav.home], 
@@ -81,8 +90,20 @@ export function Header({ lang, setLang, a11y, setA11y }) {
           </button>
 
           <div className="hidden lg:flex items-center gap-2">
-            <Btn variant="ghost" onClick={() => go("track")}>{t.login}</Btn>
-            <Btn onClick={() => go("services")}>{t.register}</Btn>
+            {currentUser ? (
+              <>
+                <div className="text-sm font-semibold mr-2" style={{ color: C.navyDeep }}>
+                  {currentUser.email}
+                </div>
+                <Btn variant="ghost" onClick={() => go("dashboard")}>{t.nav.dashboard}</Btn>
+                <Btn onClick={handleSignOut}>Sign Out</Btn>
+              </>
+            ) : (
+              <>
+                <Btn variant="ghost" onClick={() => go("login")}>{t.login}</Btn>
+                <Btn onClick={() => go("register")}>{t.register}</Btn>
+              </>
+            )}
           </div>
 
           <button className="lg:hidden p-2" onClick={() => setOpen(!open)} aria-label="Menu">
@@ -130,9 +151,21 @@ export function Header({ lang, setLang, a11y, setA11y }) {
               {label} <ChevronRight size={16} />
             </button>
           ))}
-          <div className="p-4 flex gap-2" style={{ borderTop: `1px solid ${C.navySoft}` }}>
-            <Btn variant="ghost" onClick={() => go("track")} className="flex-1">{t.login}</Btn>
-            <Btn onClick={() => go("services")} className="flex-1">{t.register}</Btn>
+          <div className="p-4 flex flex-col gap-2" style={{ borderTop: `1px solid ${C.navySoft}` }}>
+            {currentUser ? (
+              <>
+                <div className="text-sm font-semibold mb-2" style={{ color: C.saffronLight }}>
+                  {currentUser.email}
+                </div>
+                <Btn variant="ghost" onClick={() => go("dashboard")} className="w-full">{t.nav.dashboard}</Btn>
+                <Btn onClick={handleSignOut} className="w-full">Sign Out</Btn>
+              </>
+            ) : (
+              <>
+                <Btn variant="ghost" onClick={() => go("login")} className="w-full">{t.login}</Btn>
+                <Btn onClick={() => go("register")} className="w-full">{t.register}</Btn>
+              </>
+            )}
           </div>
         </div>
       )}
