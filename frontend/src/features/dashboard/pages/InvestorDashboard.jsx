@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, PieChart, Pie, Cell, BarChart, Bar } from "recharts";
 import { SectionHead } from "../../../components/common/SectionHead";
 import { C, inr } from "../../../constants/theme";
-import { PIE_COLORS } from "../../../constants/mockData";
 import apiClient from "../../../api/client";
+
+const PIE_COLORS = ["#FF9933", "#000080", "#138808", "#8FB4D4", "#A9C5DC"];
+
 import { Loader2 } from "lucide-react";
 
 export function InvestorDashboard() {
