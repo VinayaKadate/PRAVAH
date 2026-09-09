@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Landmark, Menu, X, ChevronRight } from "lucide-react";
+import { Landmark, Menu, X, ChevronRight, LogOut, User } from "lucide-react";
 import { C } from "../../constants/theme";
 import { T } from "../../constants/translations";
 import { Btn } from "../common/Btn";
 import { AccessibilityBar } from "../accessibility/AccessibilityBar";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function Header({ lang, setLang, a11y, setA11y }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const t = T[lang];
+  const { isAuthenticated, user, logout } = useAuth();
   
   const links = [
     ["", t.nav.home], 
@@ -27,6 +29,12 @@ export function Header({ lang, setLang, a11y, setA11y }) {
     navigate(`/${path}`); 
     setOpen(false); 
     window.scrollTo(0, 0); 
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+    setOpen(false);
   };
 
   const currentPath = location.pathname.substring(1);
@@ -81,8 +89,29 @@ export function Header({ lang, setLang, a11y, setA11y }) {
           </button>
 
           <div className="hidden lg:flex items-center gap-2">
-            <Btn variant="ghost" onClick={() => go("track")}>{t.login}</Btn>
-            <Btn onClick={() => go("services")}>{t.register}</Btn>
+            {isAuthenticated ? (
+              <>
+                <div className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: C.bg }}>
+                  <User size={16} color={C.navy} />
+                  <span className="text-sm font-medium" style={{ color: C.ink }}>
+                    {user?.display_name || user?.email || "User"}
+                  </span>
+                  <span className="text-xs px-1.5 py-0.5 rounded font-semibold" style={{ background: C.saffronLight, color: C.saffron }}>
+                    {user?.role || "investor"}
+                  </span>
+                </div>
+                <Btn variant="ghost" onClick={handleLogout}>
+                  <span className="flex items-center gap-1.5">
+                    <LogOut size={14} /> Logout
+                  </span>
+                </Btn>
+              </>
+            ) : (
+              <>
+                <Btn variant="ghost" onClick={() => go("login")}>{t.login}</Btn>
+                <Btn onClick={() => go("register")}>{t.register}</Btn>
+              </>
+            )}
           </div>
 
           <button className="lg:hidden p-2" onClick={() => setOpen(!open)} aria-label="Menu">
@@ -131,8 +160,20 @@ export function Header({ lang, setLang, a11y, setA11y }) {
             </button>
           ))}
           <div className="p-4 flex gap-2" style={{ borderTop: `1px solid ${C.navySoft}` }}>
-            <Btn variant="ghost" onClick={() => go("track")} className="flex-1">{t.login}</Btn>
-            <Btn onClick={() => go("services")} className="flex-1">{t.register}</Btn>
+            {isAuthenticated ? (
+              <>
+                <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded" style={{ background: "rgba(255,255,255,0.1)" }}>
+                  <User size={14} color="#D6E4F0" />
+                  <span className="text-sm text-white truncate">{user?.display_name || user?.email}</span>
+                </div>
+                <Btn variant="ghost" onClick={handleLogout} className="shrink-0">Logout</Btn>
+              </>
+            ) : (
+              <>
+                <Btn variant="ghost" onClick={() => go("login")} className="flex-1">{t.login}</Btn>
+                <Btn onClick={() => go("register")} className="flex-1">{t.register}</Btn>
+              </>
+            )}
           </div>
         </div>
       )}

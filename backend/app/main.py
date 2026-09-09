@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.core.audit import AuditMiddleware
 from app.api.router import api_router
 
 app = FastAPI(
@@ -19,6 +20,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Audit logging middleware — logs all successful write operations
+app.add_middleware(AuditMiddleware)
 
 # Include the main API router
 app.include_router(api_router, prefix="/api")
