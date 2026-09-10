@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Award, Calculator, CheckCircle, Sparkles } from 'lucide-react';
-export const IncentiveCalculator = ({ schemes, _onApplyForScheme }) => {
+import { Award, Calculator, CheckCircle, Sparkles, Settings2, Download, Play, Percent, Map } from 'lucide-react';
+import { useMockApp } from '../../../contexts/MockAppContext';
+export const IncentiveCalculator = ({ _onApplyForScheme }) => {
+  const { schemes } = useMockApp();
   const [investmentCr, setInvestmentCr] = useState(450);
   const [talukaCategory, setTalukaCategory] = useState('C');
   const [employment, setEmployment] = useState(1200);

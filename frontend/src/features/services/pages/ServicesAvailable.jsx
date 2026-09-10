@@ -1,89 +1,186 @@
-import React, { useState, useEffect } from "react";
-import { Search, CircleAlert, ChevronRight, Loader2 } from "lucide-react";
-import { SectionHead } from "../../../components/common/SectionHead";
-import { C } from "../../../constants/theme";
-import apiClient from "../../../api/client";
+import React, { useState } from "react";
+import { ChevronsUpDown } from "lucide-react";
+
+const DUMMY_SERVICES = [
+  "Form A - Electrical Installations - Other than Overhead Line",
+  "Form B - Electrical Installations - Overhead Line",
+  "Form C - Electrical Installations with Overhead Line",
+  "Generating Set Energization (Permission for charging Diesel Generator Sets)",
+  "Generating Set Plan Approval (Layout Approvals for DG sets)",
+  "Generating Set Registration (Registration of Diesel Generator Sets)",
+  "Grant of Permission for erection of lift and License to operate a lift",
+  "New electricity connection and power feasibility certificate",
+  "Authorization under Construction and Demolition Waste Management Rules, 2016",
+  "Authorization under Hazardous Waste Rule"
+];
+
+const DEPARTMENTS = [
+  { dept: "Energy Department", sub: "Electrical Inspectorate" },
+  { dept: "Environment Department", sub: "Maharashtra Pollution Control Board" },
+  { dept: "Labour Department", sub: "Directorate of Industrial Safety and Health" },
+  { dept: "Revenue Department", sub: "District Collector Office" },
+  { dept: "MIDC", sub: "Maharashtra Industrial Development Corporation" }
+];
 
 export function ServicesAvailable() {
-  const [q, setQ] = useState("");
-  const [serviceGroups, setServiceGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = 10;
+  const totalItems = 100; // 10 pages * 10 items
 
-  useEffect(() => {
-    apiClient.get("/services/")
-      .then(res => setServiceGroups(res.data.data))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
+  // Generate 10 items for the current page
+  const currentData = Array.from({ length: itemsPerPage }).map((_, index) => {
+    const srNo = (currentPage - 1) * itemsPerPage + index + 1;
+    // Pick departments and services somewhat predictably based on srNo
+    const deptObj = DEPARTMENTS[srNo % DEPARTMENTS.length];
+    const serviceName = DUMMY_SERVICES[index % DUMMY_SERVICES.length];
 
-  const groups = serviceGroups.filter(
-    (g) =>
-      g.dept.toLowerCase().includes(q.toLowerCase()) ||
-      g.items.some((i) => i.toLowerCase().includes(q.toLowerCase()))
-  );
-  
+    return {
+      srNo,
+      department: deptObj.dept,
+      subDepartment: deptObj.sub,
+      serviceName: srNo <= 10 ? serviceName : `${serviceName} - Variant ${srNo}`
+    };
+  });
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
-    <div className="px-4 py-12">
+    <div className="bg-white min-h-screen p-8 text-sm font-sans" style={{ color: "#333" }}>
       <div className="max-w-7xl mx-auto">
-        <SectionHead
-          eyebrow="119 services · 16 departments"
-          title="Services you can apply for"
-          sub="Every service below is filed, tracked and delivered through MAITRI. Nothing here needs a visit to the department."
-        />
-        <div className="flex items-center gap-2 mb-8 p-2 rounded max-w-xl" style={{ background: C.white, border: `1px solid ${C.line}` }}>
-          <Search size={18} color={C.slate} className="ml-2" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Filter by department or service name"
-            className="w-full py-2 text-sm focus:outline-none"
-            style={{ color: C.ink }}
-          />
+        
+        {/* HEADING */}
+        <div className="mb-6 border-b-2 border-gray-100 pb-2 flex">
+          <h2 className="text-xl font-bold" style={{ color: "#0F766E", borderBottom: "3px solid #0F766E", marginBottom: "-11px", paddingBottom: "8px" }}>
+            LIST OF SERVICES
+          </h2>
         </div>
 
-        {loading ? (
-          <div className="p-10 text-center flex flex-col items-center justify-center">
-            <Loader2 className="animate-spin mb-2" color={C.saffron} size={32} />
-            <p className="text-sm" style={{ color: C.slate }}>Loading services...</p>
+        {/* FILTER BOX */}
+        <div className="border border-gray-200 p-6 rounded mb-6 bg-white shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+            <div>
+              <label className="block font-bold text-gray-800 mb-1">Select Department</label>
+              <select className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-gray-400">
+                <option>------Select----</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold text-gray-800 mb-1">Select Sub-Department</label>
+              <select className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-gray-400">
+                <option></option>
+              </select>
+            </div>
           </div>
-        ) : groups.length === 0 ? (
-          <div className="p-10 rounded text-center" style={{ background: C.white, border: `1px solid ${C.line}` }}>
-            <CircleAlert size={28} color={C.slate} className="mx-auto mb-3" />
-            <p className="text-sm" style={{ color: C.slate }}>
-              No service matches that term. Try the department name, or call the helpdesk on 1800 120 8040.
-            </p>
+          <div className="flex justify-center gap-2 mt-4">
+            <button className="bg-[#198754] text-white px-5 py-1.5 rounded hover:bg-[#157347] transition-colors">
+              Search
+            </button>
+            <button className="bg-[#dc3545] text-white px-5 py-1.5 rounded hover:bg-[#bb2d3b] transition-colors">
+              Reset
+            </button>
           </div>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-5">
-            {groups.map((g) => (
-              <div key={g.dept} className="rounded overflow-hidden" style={{ background: C.white, border: `1px solid ${C.line}` }}>
-                <div className="flex items-center justify-between px-5 py-3" style={{ background: C.navy }}>
-                  <span className="font-semibold text-sm" style={{ color: C.white }}>{g.dept}</span>
-                  <span className="text-xs px-2 py-0.5 rounded" style={{ background: C.saffron, color: C.white }}>
-                    {g.count} services
-                  </span>
-                </div>
-                <div className="p-5">
-                  {g.items.map((i) => (
-                    <div key={i} className="flex items-center justify-between py-2" style={{ borderBottom: `1px solid ${C.bg}` }}>
-                      <span className="text-sm" style={{ color: C.ink }}>{i}</span>
-                      <button 
-                        className="text-xs font-semibold" 
-                        style={{ color: C.saffron }}
-                        onClick={() => window.location.href = '/apply'}
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  ))}
-                  <button className="mt-3 text-xs font-semibold flex items-center gap-1" style={{ color: C.navy }}>
-                    View all {g.count} <ChevronRight size={13} />
-                  </button>
-                </div>
-              </div>
-            ))}
+        </div>
+
+        {/* TOP ACTIONS (Export & Search) */}
+        <div className="flex justify-between items-center mb-3">
+          <button className="bg-[#6f42c1] text-white px-4 py-1.5 rounded text-xs font-semibold hover:bg-[#59339d] transition-colors shadow-sm">
+            Export to Excel
+          </button>
+          <div className="flex items-center gap-2">
+            <label className="text-gray-600">Search:</label>
+            <input 
+              type="text" 
+              className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-gray-400 w-48"
+            />
           </div>
-        )}
+        </div>
+
+        {/* TABLE */}
+        <div className="overflow-x-auto border-t border-gray-200">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-gray-200 text-gray-700">
+                <th className="py-3 px-4 font-bold w-16">Sr.No</th>
+                <th className="py-3 px-4 font-bold flex items-center justify-between cursor-pointer group">
+                  Department Name
+                  <ChevronsUpDown size={14} className="text-gray-300 group-hover:text-gray-500" />
+                </th>
+                <th className="py-3 px-4 font-bold">
+                  <div className="flex items-center justify-between cursor-pointer group">
+                    Sub-Department Name
+                    <ChevronsUpDown size={14} className="text-gray-300 group-hover:text-gray-500" />
+                  </div>
+                </th>
+                <th className="py-3 px-4 font-bold">Service Name</th>
+                <th className="py-3 px-4 font-bold text-center">
+                  <div className="flex items-center justify-center gap-2 cursor-pointer group">
+                    Apply
+                    <ChevronsUpDown size={14} className="text-gray-300 group-hover:text-gray-500" />
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.map((row, idx) => (
+                <tr 
+                  key={row.srNo} 
+                  className={`border-b border-gray-100 hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-[#f9f9f9]' : 'bg-white'}`}
+                >
+                  <td className="py-3 px-4">{row.srNo}</td>
+                  <td className="py-3 px-4">{row.department}</td>
+                  <td className="py-3 px-4">{row.subDepartment}</td>
+                  <td className="py-3 px-4 pr-12">{row.serviceName}</td>
+                  <td className="py-3 px-4 text-center">
+                    <button className="bg-[#198754] text-white px-3 py-1 text-xs rounded hover:bg-[#157347] transition-colors whitespace-nowrap shadow-sm">
+                      Apply Now
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* PAGINATION */}
+        <div className="flex justify-between items-center mt-4 text-gray-600 text-sm">
+          <div>
+            Showing {(currentPage - 1) * itemsPerPage + 1} to {currentPage * itemsPerPage} of {totalItems} entries
+          </div>
+          <div className="flex border border-gray-200 rounded">
+            <button 
+              className={`px-3 py-1.5 border-r border-gray-200 hover:bg-gray-50 ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700'}`}
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }).map((_, idx) => {
+              const pageNum = idx + 1;
+              return (
+                <button 
+                  key={pageNum}
+                  className={`px-3 py-1.5 border-r border-gray-200 hover:bg-gray-50 ${currentPage === pageNum ? 'bg-gray-100 font-bold text-gray-900' : 'text-gray-600'}`}
+                  onClick={() => handlePageChange(pageNum)}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            <button 
+              className={`px-3 py-1.5 hover:bg-gray-50 ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700'}`}
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   );

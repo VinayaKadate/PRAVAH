@@ -1,29 +1,11 @@
 import React, { useState } from 'react';
 import { Factory, Zap, Droplets, Plus, Building2 } from 'lucide-react';
-export const FactoryUnits = ({ units, onAddUnit }) => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newUnit, setNewUnit] = useState({
-    unitName: '',
-    midcArea: 'Chakan Industrial Phase II',
-    plotNumber: '',
-    surveyNumber: '',
-    taluka: 'Khed',
-    district: 'Pune',
-    category: 'Orange',
-    powerSanctionedKva: 1500,
-    waterDemandKl: 50,
-    builtUpAreaSqM: 12000,
-    operationalStatus: 'Under Construction'
-  });
+import { useMockApp } from '../../../contexts/MockAppContext';
+import { AddUnitModal } from '../components/AddUnitModal';
 
-  const handleCreate = (e) => {
-    e.preventDefault();
-    onAddUnit({
-      ...newUnit,
-      id: `UNIT-MH-${Math.floor(100 + Math.random() * 900)}`
-    });
-    setShowAddModal(false);
-  };
+export const FactoryUnits = () => {
+  const { factoryUnits, addFactoryUnit } = useMockApp();
+  const [showAddModal, setShowAddModal] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -51,7 +33,7 @@ export const FactoryUnits = ({ units, onAddUnit }) => {
 
       {/* Units Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {units.map((unit) => {
+        {factoryUnits.map((unit) => {
           const isRed = unit.category === 'Red';
           const isOrange = unit.category === 'Orange';
 
@@ -115,116 +97,10 @@ export const FactoryUnits = ({ units, onAddUnit }) => {
 
       {/* Add Unit Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-lg w-full rounded-2xl p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-              <h3 className="font-extrabold text-base text-slate-900">Register New Industrial Unit</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>
-            </div>
-
-            <form onSubmit={handleCreate} className="space-y-4 text-xs">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Unit / Plant Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Pune Battery Packaging Facility"
-                  value={newUnit.unitName}
-                  onChange={(e) => setNewUnit({ ...newUnit, unitName: e.target.value })}
-                  className="w-full border border-slate-300 rounded-xl p-3 bg-white font-medium"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">MIDC Industrial Estate</label>
-                  <input
-                    type="text"
-                    value={newUnit.midcArea}
-                    onChange={(e) => setNewUnit({ ...newUnit, midcArea: e.target.value })}
-                    className="w-full border border-slate-300 rounded-xl p-3 bg-white font-medium"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Plot Number</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Plot F-12"
-                    value={newUnit.plotNumber}
-                    onChange={(e) => setNewUnit({ ...newUnit, plotNumber: e.target.value })}
-                    className="w-full border border-slate-300 rounded-xl p-3 bg-white font-bold"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Survey / Gut Number</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Survey 210/1"
-                    value={newUnit.surveyNumber}
-                    onChange={(e) => setNewUnit({ ...newUnit, surveyNumber: e.target.value })}
-                    className="w-full border border-slate-300 rounded-xl p-3 bg-white font-medium"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Pollution Category</label>
-                  <select
-                    value={newUnit.category}
-                    onChange={(e) => setNewUnit({ ...newUnit, category: e.target.value  })}
-                    className="w-full border border-slate-300 rounded-xl p-3 bg-white font-bold"
-                  >
-                    <option value="Red">Red (Heavy)</option>
-                    <option value="Orange">Orange (Moderate)</option>
-                    <option value="Green">Green (Low)</option>
-                    <option value="White">White (Zero)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Power Sanctioned (kVA)</label>
-                  <input
-                    type="number"
-                    value={newUnit.powerSanctionedKva}
-                    onChange={(e) => setNewUnit({ ...newUnit, powerSanctionedKva: Number(e.target.value) })}
-                    className="w-full border border-slate-300 rounded-xl p-3 bg-white font-bold"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Water Demand (KLD)</label>
-                  <input
-                    type="number"
-                    value={newUnit.waterDemandKl}
-                    onChange={(e) => setNewUnit({ ...newUnit, waterDemandKl: Number(e.target.value) })}
-                    className="w-full border border-slate-300 rounded-xl p-3 bg-white font-bold"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 border border-slate-300 rounded-xl font-bold text-slate-600 hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow transition-all"
-                >
-                  Save Factory Unit
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <AddUnitModal 
+          onClose={() => setShowAddModal(false)} 
+          onAdd={addFactoryUnit} 
+        />
       )}
     </div>
   );

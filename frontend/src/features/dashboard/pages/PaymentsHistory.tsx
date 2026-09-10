@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Download, ShieldCheck, Receipt } from 'lucide-react';
-export const PaymentsHistory = ({ payments, onPayChallan }) => {
+import { useMockApp } from '../../../contexts/MockAppContext';
+
+export const PaymentsHistory = ({ onPayChallan }) => {
+  const { payments } = useMockApp();
   const [activeTab, setActiveTab] = useState('All');
   const [selectedChallanForPayment, setSelectedChallanForPayment] = useState(null);
   const [paymentMode, setPaymentMode] = useState('NetBanking');

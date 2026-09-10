@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   INITIAL_FACTORY_UNITS,
@@ -19,6 +19,7 @@ import { ChatBot } from "../components/chatbot/ChatBot";
 import { FONT, C } from "../constants/theme";
 import { AuthProvider } from "../contexts/AuthContext";
 import { TranslationProvider } from "../contexts/TranslationContext";
+import { MockAppProvider } from "../contexts/MockAppContext";
 
 import { Home } from "../features/home/pages/Home";
 import { About } from "../pages/About";
@@ -45,11 +46,12 @@ import { DepartmentQueries } from "../features/grievances/pages/DepartmentQuerie
 import { PublicConsultations } from "../features/home/pages/PublicConsultations";
 import { AuditLogs } from "../features/dashboard/pages/AuditLogs";
 import { FraudRadar } from "../features/officer/pages/FraudRadar";
-// A wrapper to enforce authentication
+import { Feedback } from "../features/dashboard/pages/Feedback";
+// A wrapper to enforce authentication inline
 function PrivateRoute() {
   const { currentUser, loading } = useAuth();
   if (loading) return null;
-  return currentUser ? <AuthenticatedLayout /> : <Navigate to="/login" />;
+  return currentUser ? <Outlet /> : <Login />;
 }
 
 // A layout for public pages
@@ -68,54 +70,51 @@ function PublicLayout({ a11y, setA11y }) {
 function AppRoutes() {
   const [a11y, setA11y] = useState({ font: 0, invert: false, links: false });
 
-  const fs = a11y.font === 1 ? "17px" : a11y.font === 2 ? "18px" : "16px";
-  const a11yClass = `${a11y.invert ? "invert hue-rotate-180" : ""} ${a11y.links ? "underline" : ""}`;
+  useEffect(() => {
+    const fs = a11y.font === 1 ? "17px" : a11y.font === 2 ? "18px" : "16px";
+    document.documentElement.style.fontSize = fs;
+  }, [a11y.font]);
 
-  const mockState = {
-    factoryUnits: INITIAL_FACTORY_UNITS,
-    compliances: INITIAL_COMPLIANCES,
-    applications: INITIAL_APPLICATIONS,
-    documents: INITIAL_DOCUMENTS
-  };
+  const a11yClass = `${a11y.invert ? "invert hue-rotate-180" : ""} ${a11y.links ? "underline-links" : ""}`;
 
   return (
     <BrowserRouter>
       <div 
         className={`min-h-screen flex flex-col font-sans antialiased ${a11yClass}`}
-        style={{ fontFamily: FONT, fontSize: fs, background: C.white, color: C.ink }}
+        style={{ fontFamily: FONT, background: C.white, color: C.ink }}
       >
         <Routes>
-          {/* Public Routes */}
+          {/* Public & Private Routes combined under PublicLayout */}
           <Route element={<PublicLayout a11y={a11y} setA11y={setA11y} />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
+            <Route element={<PrivateRoute />}>
+              <Route path="/dashboard" element={<InvestorDashboard />} />
+              <Route path="/business" element={<MyBusiness />} />
+              <Route path="/drive" element={<DocumentDrive />} />
+              <Route path="/services" element={<ServicesAvailable />} />
+              <Route path="/apply" element={<ApplyService />} />
+              <Route path="/track" element={<ServicesApplied />} />
+              <Route path="/calc" element={<IncentiveCalculator />} />
+              <Route path="/grievance" element={<Grievances />} />
+              <Route path="/factory" element={<FactoryUnits />} />
+              <Route path="/wizard" element={<InvestorWizard />} />
+              <Route path="/payments" element={<PaymentsHistory />} />
+              <Route path="/queries" element={<DepartmentQueries />} />
+              <Route path="/consultations" element={<PublicConsultations />} />
+              <Route path="/audit" element={<AuditLogs />} />
+              <Route path="/feedback" element={<Feedback />} />
+            </Route>
           </Route>
 
           {/* Officer Routes */}
           <Route path="/officer" element={<PrivateRoute><OfficerLayout /></PrivateRoute>}>
             <Route index element={<OfficerDashboard />} />
             <Route path="fraud" element={<FraudRadar alerts={INITIAL_FRAUD_ALERTS} />} />
-          </Route>
-
-          {/* Private Routes (Sidebar Layout) */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<InvestorDashboard state={mockState} activeUser={INITIAL_USERS['user_1']} />} />
-            <Route path="/business" element={<MyBusiness />} />
-            <Route path="/drive" element={<DocumentDrive />} />
-            <Route path="/services" element={<ServicesAvailable />} />
-            <Route path="/apply" element={<ApplyService />} />
-            <Route path="/track" element={<ServicesApplied />} />
-            <Route path="/calc" element={<IncentiveCalculator schemes={INITIAL_SCHEMES} />} />
-            <Route path="/grievance" element={<Grievances />} />
-            <Route path="/factory" element={<FactoryUnits units={INITIAL_FACTORY_UNITS} />} />
-            <Route path="/wizard" element={<InvestorWizard />} />
-            <Route path="/payments" element={<PaymentsHistory payments={INITIAL_PAYMENTS} />} />
-            <Route path="/queries" element={<DepartmentQueries queries={INITIAL_QUERIES} />} />
-            <Route path="/consultations" element={<PublicConsultations consultations={INITIAL_PUBLIC_CONSULTATIONS} />} />
-            <Route path="/audit" element={<AuditLogs logs={INITIAL_AUDIT_LOGS} />} />
           </Route>
         </Routes>
         <ChatBot />
@@ -129,7 +128,9 @@ export function App() {
   return (
     <TranslationProvider>
       <AuthProvider>
-        <AppRoutes />
+        <MockAppProvider>
+          <AppRoutes />
+        </MockAppProvider>
       </AuthProvider>
     </TranslationProvider>
   );

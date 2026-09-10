@@ -8,7 +8,7 @@ import { T } from "../../../constants/translations";
 import { useCountUp } from "../../../hooks/useCountUp";
 import apiClient from "../../../api/client";
 import { useTranslation } from "../../../contexts/TranslationContext";
-
+import { useAuth } from "../../../contexts/AuthContext";
 const FEATURES = [
   { icon: FileCheck, title: "Single-window approvals", body: "One application, one set of documents. The portal routes your file to every department that has to sign off on it." },
   { icon: Clock, title: "Desk-level tracking", body: "See which officer is holding your file, for how long, and what the statutory timeline says it should take." },
@@ -23,6 +23,8 @@ import { Clock } from "lucide-react"; // moved up
 function Hero() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
   return (
     <div style={{ background: C.navyDeep }} className="relative overflow-hidden">
       <div className="absolute right-0 top-0 h-full w-1/3 opacity-10 pointer-events-none"

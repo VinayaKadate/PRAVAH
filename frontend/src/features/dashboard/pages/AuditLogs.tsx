@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { History, Shield, Search, Filter, Clock, UserCheck, Terminal } from 'lucide-react';
-export const AuditLogs = ({ logs }) => {
+import { useMockApp } from '../../../contexts/MockAppContext';
+
+export const AuditLogs = () => {
+  const { auditLogs: logs } = useMockApp();
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredLogs = logs.filter((l) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Building2, FileText, FolderOpen, LifeBuoy, Bell, User, LogOut } from 'lucide-react';
+import { LayoutDashboard, Building2, Factory, FileText, FileBadge, FolderOpen, Wallet, LifeBuoy, History, User, LogOut, Bell } from 'lucide-react';
 import { C } from '../../constants/theme';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { AccessibilityBar } from '../accessibility/AccessibilityBar';
@@ -11,13 +11,13 @@ import { signOut } from 'firebase/auth';
 const NAV_ITEMS = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { id: 'business', icon: Building2, label: 'My Business', path: '/business' },
-  { id: 'factory', icon: Building2, label: 'Factory Units', path: '/factory' },
+  { id: 'factory', icon: Factory, label: 'Factory Units', path: '/factory' },
   { id: 'wizard', icon: FileText, label: 'Investor Wizard', path: '/wizard' },
-  { id: 'apply', icon: FileText, label: 'Applications', path: '/apply' },
+  { id: 'apply', icon: FileBadge, label: 'Applications', path: '/apply' },
   { id: 'drive', icon: FolderOpen, label: 'Document Drive', path: '/drive' },
-  { id: 'payments', icon: FolderOpen, label: 'Payments', path: '/payments' },
+  { id: 'payments', icon: Wallet, label: 'Payments', path: '/payments' },
   { id: 'support', icon: LifeBuoy, label: 'Support & Grievances', path: '/grievance' },
-  { id: 'audit', icon: LifeBuoy, label: 'Audit Logs', path: '/audit' },
+  { id: 'audit', icon: History, label: 'Audit Logs', path: '/audit' },
 ];
 
 export function AuthenticatedLayout() {

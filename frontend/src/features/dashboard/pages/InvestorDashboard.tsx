@@ -1,526 +1,277 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  CheckCircle, Clock, FileText, Upload, Calendar, 
-  ChevronRight, Building, Sparkles, Bell, ArrowRight, ShieldCheck, 
-  Award, AlertTriangle, CheckCircle2, X, Send, ChevronDown, 
-  Factory, Check
+import React, { useState } from 'react';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
+} from 'recharts';
+import {
+  LayoutDashboard, FileText, Users, Calculator,
+  HelpCircle, AlertTriangle, MessageSquare, Search,
+  Calendar as CalendarIcon, Filter
 } from 'lucide-react';
+import { C } from '../../../constants/theme';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useNavigate } from 'react-router-dom';
 
+const lineData = [
+  { name: 'Jan', Applications: 1000, Disposed: 800, Services: 900 },
+  { name: 'Feb', Applications: 2000, Disposed: 1500, Services: 1800 },
+  { name: 'Mar', Applications: 1500, Disposed: 1200, Services: 1600 },
+  { name: 'Apr', Applications: 2000, Disposed: 1800, Services: 2100 },
+  { name: 'May', Applications: 18000, Disposed: 15000, Services: 17000 },
+  { name: 'Jun', Applications: 35000, Disposed: 30000, Services: 31000 },
+  { name: 'Jul', Applications: 38000, Disposed: 35000, Services: 36000 },
+  { name: 'Aug', Applications: 42000, Disposed: 39000, Services: 40000 },
+  { name: 'Sep', Applications: 15000, Disposed: 14000, Services: 14500 },
+  { name: 'Oct', Applications: 0, Disposed: 0, Services: 0 },
+  { name: 'Nov', Applications: 0, Disposed: 0, Services: 0 },
+  { name: 'Dec', Applications: 0, Disposed: 0, Services: 0 },
+];
 
+const grievancesData = [
+  { name: 'Replied', value: 400 },
+  { name: 'Closed', value: 300 },
+  { name: 'Pending', value: 300 },
+  { name: 'Total', value: 1000 },
+];
 
-export const InvestorDashboard = ({
-  state,
-  activeUser,
-  setCurrentView,
-  onOpenAssistant,
-  _onOpenCAF,
-  onUploadFireNOC,
-  lang = 'en',
-  setLang,
-  onSwitchUser,
-  setActiveRole,
-  onLogout,
-  onOpenTrack
-}) => {
-  // Factory/Business Unit selection state
-  const factoryUnits = state.factoryUnits || [];
-  const [selectedUnitId, setSelectedUnitId] = useState(
-    factoryUnits[0]?.id || 'UNIT-PUN-01'
-  );
-  const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+const queriesData = [
+  { name: 'Total', value: 800 },
+  { name: 'Pending', value: 200 },
+  { name: 'Closed', value: 400 },
+  { name: 'Replied', value: 200 },
+];
 
-  // Take Action: Upload Fire NOC Modal state
-  const [actionModalOpen, setActionModalOpen] = useState(false);
-  const [uploadStep, setUploadStep] = useState('idle');
-  const [isFireNOCUploaded, setIsFireNOCUploaded] = useState(false);
+const feedbackData = [
+  { name: 'Negative', value: 10 },
+  { name: 'Neutral', value: 20 },
+  { name: 'Positive', value: 70 },
+];
 
-  // AI Prompt Floating widget state
-  const [floatingAiInput, setFloatingAiInput] = useState('');
+const PIE_COLORS = {
+  Grievances: ['#047857', '#1E3A8A', '#D97706', '#F59E0B'],
+  Queries: ['#F97316', '#FACC15', '#0F766E', '#1D4ED8'],
+  Feedback: ['#0369A1', '#0F766E', '#EA580C']
+};
 
-  const activeUnit = useMemo(() => {
-    const fUnits = state.factoryUnits || [];
-    return fUnits.find((u) => u.id === selectedUnitId) || fUnits[0] || {
-      unitName: 'Chakan Assembly Line IV (EV & Commercial)',
-      midcArea: 'Chakan Industrial Phase II',
-      plotNumber: 'Plot E-14/2',
-      district: 'Pune',
-      category: 'Red'
-    };
-  }, [state.factoryUnits, selectedUnitId]);
-
-  // Notifications List
-  const notifications = useMemo(() => [
-    {
-      id: 'notif-1',
-      title: 'Action Needed: Fire NOC Missing',
-      desc: 'Blocking DISH Factory Plan (DISH-PLN-01) and MPCB Consent to Establish.',
-      time: '15 mins ago',
-      level: 'critical'
-    },
-    {
-      id: 'notif-2',
-      title: 'SLA Risk: MPCB CTE Scrutiny',
-      desc: '4 days remaining on RTS statutory clock (Day 26 of 30).',
-      time: '2 hours ago',
-      level: 'warning'
-    },
-    {
-      id: 'notif-3',
-      title: 'MIDC Possession Confirmed',
-      desc: 'Plot E-14/2 demarcation order registered successfully.',
-      time: 'Yesterday',
-      level: 'success'
-    }
-  ], []);
-
-  // Compute 4 Intelligence Areas Stats
-  const intelligenceStats = useMemo(() => {
-    // 1. Applications
-    const active = state.applications.filter((a) => a.status === 'pending' || a.status === 'scrutiny').length;
-    const atRisk = state.applications.filter((a) => a.status === 'action_required' || a.status === 'rejected').length;
-    const completed = state.applications.filter((a) => a.status === 'approved').length;
-
-    // 2. Documents
-    const healthy = state.documents.filter((d) => d.status === 'verified').length;
-    const needsAttention = state.documents.filter((d) => d.status === 'rejected' || (d.issues && d.issues.length > 0)).length;
-    const missing = isFireNOCUploaded ? 0 : 1; // Fire NOC is the critical missing document
-
-    // 3. Compliance
-    const overdue = state.compliances ? state.compliances.filter((c) => c.status === 'overdue').length : 0;
-
-    return {
-      apps: { active: active || 3, atRisk: atRisk || 1, completed: completed || 2 },
-      docs: { healthy: healthy || 4, needsAttention: needsAttention || 1, missing: missing },
-      compliance: { upcomingDeadline: 'Form V Environmental Return (30 Sep)', overdueCount: overdue },
-      opportunities: {
-        scheme: 'PSI 2019 (Zone C)',
-        incentives: '₹ 22.5 Cr Capital Subsidy',
-        regulatory: 'DISH Plan Self-Certification GR'
-      }
-    };
-  }, [state, isFireNOCUploaded]);
-
-  // Handle Take Action upload completion
-  const handleCompleteUpload = () => {
-    setUploadStep('validating');
-    setTimeout(() => {
-      setUploadStep('completed');
-      setIsFireNOCUploaded(true);
-      if (onUploadFireNOC) {
-        onUploadFireNOC();
-      }
-    }, 1200);
-  };
+export const InvestorDashboard = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('count');
 
   return (
-    <div id="industrial-command-dashboard" className="w-full max-w-[1440px] mx-auto space-y-6 text-slate-900">
-      
-      {/* ========================================================================= */}
-      {/* 3. MY INDUSTRIAL JOURNEY — HORIZONTAL VISUAL PIPELINE                      */}
-      {/* ========================================================================= */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-900">
-              My Industrial Journey
-            </h2>
-            <span className="text-xs text-slate-400">• Standard Maharashtra RTS Industrial Setup Pipeline</span>
-          </div>
-          <button 
-            onClick={() => setCurrentView('roadmap')}
-            className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+    <div className="flex-1 flex flex-col bg-slate-50 font-sans" style={{ minHeight: 'calc(100vh - 120px)' }}>
+      {/* MAIN CONTENT */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+
+        {/* TOP TABS */}
+        <div className="bg-white border-b border-slate-200 px-6 flex items-end">
+          <button
+            onClick={() => setActiveTab('count')}
+            className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${activeTab === 'count' ? 'border-blue-600 text-blue-700 bg-blue-50/50' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
           >
-            <span>Full Dependency Map</span>
-            <ChevronRight size={14} />
+            Application Count
+          </button>
+          <button
+            onClick={() => setActiveTab('summary')}
+            className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${activeTab === 'summary' ? 'border-blue-600 text-blue-700 bg-blue-50/50' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+          >
+            Application Summary
+          </button>
+          <button
+            onClick={() => setActiveTab('wise')}
+            className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${activeTab === 'wise' ? 'border-blue-600 text-blue-700 bg-blue-50/50' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+          >
+            Application Wise Details
+          </button>
+          <button
+            onClick={() => setActiveTab('dept')}
+            className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${activeTab === 'dept' ? 'border-blue-600 text-blue-700 bg-blue-50/50' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+          >
+            Department Details
           </button>
         </div>
 
-        {/* Horizontal Linear Pipeline */}
-        <div className="relative pt-3 pb-2 overflow-x-auto">
-          <div className="min-w-[760px] flex items-center justify-between relative">
-            
-            {/* Connecting Baseline */}
-            <div className="absolute top-5 left-8 right-8 h-1 bg-slate-100 z-0"></div>
-            
-            {/* Completed Line Progress */}
-            <div 
-              className="absolute top-5 left-8 h-1 bg-emerald-500 z-0 transition-all duration-500"
-              style={{ width: isFireNOCUploaded ? '50%' : '35%' }}
-            ></div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
 
-            {/* Stage 1: Business Setup */}
-            <div className="relative z-10 flex flex-col items-center text-center space-y-1.5 w-28">
-              <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md ring-4 ring-white">
-                <Check size={18} className="stroke-[3]" />
-              </div>
-              <p className="text-xs font-black text-slate-900">Business Setup</p>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                Completed
-              </span>
-              <span className="text-[10px] text-slate-400">MIDC Plot Allotted</span>
+          {/* Header Row: Title & Filters combined */}
+          <div className="flex flex-wrap lg:flex-nowrap items-end justify-between gap-4">
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">{t.dash.title || "Dashboard Overview"}</h1>
+              <p className="text-sm text-slate-500">{t.dash.sub || "Real-time insights and analytics"}</p>
             </div>
 
-            {/* Stage 2: Documents */}
-            <div className="relative z-10 flex flex-col items-center text-center space-y-1.5 w-28">
-              <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md ring-4 ring-white">
-                <Check size={18} className="stroke-[3]" />
+            {/* Filters Row */}
+            <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex flex-wrap sm:flex-nowrap items-end gap-3 shrink-0">
+              <div className="flex-1">
+                <label className="block text-[11px] font-semibold text-slate-500 mb-0.5">From</label>
+                <div className="relative">
+                  <CalendarIcon size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input type="text" defaultValue="January 1st, 2016" className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
               </div>
-              <p className="text-xs font-black text-slate-900">Documents</p>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                5/6 Verified
-              </span>
-              <span className="text-[10px] text-slate-400">Vault & DSC Check</span>
+              <div className="flex-1">
+                <label className="block text-[11px] font-semibold text-slate-500 mb-0.5">To</label>
+                <div className="relative">
+                  <CalendarIcon size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input type="text" defaultValue="September 11th, 2026" className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button className="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-blue-700">Apply</button>
+                <button className="px-4 py-1.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg shadow-sm hover:bg-slate-200 border border-slate-200">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          {/* 4 Cards */}
+          <div className="grid grid-cols-4 gap-4">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-4 text-white shadow-md flex justify-between relative overflow-hidden">
+              <div className="absolute -right-2 -bottom-2 opacity-10"><LayoutDashboard size={80} /></div>
+              <div>
+                <p className="text-xs font-medium text-blue-100">{t.dash.totalServ}</p>
+                <h3 className="text-2xl font-black mt-1">179</h3>
+              </div>
+              <div className="bg-white/20 p-2 rounded-lg h-fit"><LayoutDashboard size={18} /></div>
             </div>
 
-            {/* Stage 3: Approvals (Active / Blocked) */}
-            <div className="relative z-10 flex flex-col items-center text-center space-y-1.5 w-28">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md ring-4 ring-white transition-colors ${
-                isFireNOCUploaded ? 'bg-blue-600 text-white' : 'bg-amber-500 text-white ring-amber-100'
-              }`}>
-                {isFireNOCUploaded ? <Clock size={18} /> : <AlertTriangle size={18} />}
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-500 rounded-xl p-4 text-white shadow-md flex justify-between relative overflow-hidden">
+              <div className="absolute -right-2 -bottom-2 opacity-10"><FileText size={80} /></div>
+              <div>
+                <p className="text-xs font-medium text-purple-100">{t.dash.apps}</p>
+                <h3 className="text-2xl font-black mt-1">5,67,805</h3>
+                <span className="inline-block mt-1 text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold">26.30% vs last month</span>
               </div>
-              <p className="text-xs font-black text-slate-900">Approvals</p>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                isFireNOCUploaded 
-                  ? 'bg-blue-50 text-blue-700 border-blue-200' 
-                  : 'bg-amber-50 text-amber-800 border-amber-300 animate-pulse'
-              }`}>
-                {isFireNOCUploaded ? 'Scrutiny Active' : 'Action Needed'}
-              </span>
-              <span className="text-[10px] text-slate-400">
-                {isFireNOCUploaded ? 'DISH & MPCB' : 'Fire NOC Blocked'}
-              </span>
+              <div className="bg-white/20 p-2 rounded-lg h-fit"><FileText size={18} /></div>
             </div>
 
-            {/* Stage 4: Inspection */}
-            <div className="relative z-10 flex flex-col items-center text-center space-y-1.5 w-28">
-              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 border border-slate-300 flex items-center justify-center font-bold ring-4 ring-white">
-                <Building size={16} />
+            <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-4 text-white shadow-md flex justify-between relative overflow-hidden">
+              <div className="absolute -right-2 -bottom-2 opacity-10"><AlertTriangle size={80} /></div>
+              <div>
+                <p className="text-xs font-medium text-orange-100">{t.dash.grievances}</p>
+                <h3 className="text-2xl font-black mt-1">5,473</h3>
+                <span className="inline-block mt-1 text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold">14.15% vs last month</span>
               </div>
-              <p className="text-xs font-semibold text-slate-500">Inspection</p>
-              <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                Queued
-              </span>
-              <span className="text-[10px] text-slate-400">Joint Site Visit</span>
+              <div className="bg-white/20 p-2 rounded-lg h-fit"><AlertTriangle size={18} /></div>
             </div>
 
-            {/* Stage 5: Decision */}
-            <div className="relative z-10 flex flex-col items-center text-center space-y-1.5 w-28">
-              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 border border-slate-300 flex items-center justify-center font-bold ring-4 ring-white">
-                <ShieldCheck size={16} />
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl p-4 text-white shadow-md flex justify-between relative overflow-hidden">
+              <div className="absolute -right-2 -bottom-2 opacity-10"><HelpCircle size={80} /></div>
+              <div>
+                <p className="text-xs font-medium text-emerald-100">{t.dash.queries}</p>
+                <h3 className="text-2xl font-black mt-1">4,858</h3>
+                <span className="inline-block mt-1 text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold">17.06% vs last month</span>
               </div>
-              <p className="text-xs font-semibold text-slate-500">Decision</p>
-              <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                Pending
-              </span>
-              <span className="text-[10px] text-slate-400">Sanction / Grant</span>
+              <div className="bg-white/20 p-2 rounded-lg h-fit"><HelpCircle size={18} /></div>
+            </div>
+          </div>
+
+          {/* Charts Area */}
+          <div className="grid grid-cols-2 gap-4">
+
+            {/* Main Line Chart */}
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm col-span-2 lg:col-span-1 flex flex-col">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-bold text-slate-800 text-sm">Services Performance Trend <span className="text-blue-500 font-normal text-xs">(View)</span></h3>
+                <div className="bg-slate-50 border border-slate-200 text-xs px-2 py-0.5 rounded shadow-sm">2026 ▾</div>
+              </div>
+              <div className="flex-1 min-h-[220px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={lineData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={(val) => val === 0 ? '0' : `${val / 1000}k`} />
+                    <RechartsTooltip />
+                    <Legend iconType="square" wrapperStyle={{ fontSize: '10px' }} />
+                    <Line type="monotone" dataKey="Applications" stroke="#f97316" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="Disposed" stroke="#0ea5e9" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="Services" stroke="#10b981" strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
-            {/* Stage 6: Compliance */}
-            <div className="relative z-10 flex flex-col items-center text-center space-y-1.5 w-28">
-              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 border border-slate-300 flex items-center justify-center font-bold ring-4 ring-white">
-                <Calendar size={16} />
+            <div className="grid grid-cols-1 gap-4 lg:col-span-1">
+              {/* Grievances Status */}
+              <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-slate-800 text-sm">Grievances Status <span className="text-blue-500 font-normal text-xs">(View)</span></h3>
+                </div>
+                <div className="flex-1 min-h-[160px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={grievancesData} innerRadius={45} outerRadius={65} paddingAngle={2} dataKey="value" stroke="none">
+                        {grievancesData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={PIE_COLORS.Grievances[index % PIE_COLORS.Grievances.length]} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip />
+                      <Legend iconType="square" layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-              <p className="text-xs font-semibold text-slate-500">Compliance</p>
-              <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                Ongoing
-              </span>
-              <span className="text-[10px] text-slate-400">Form V & Returns</span>
+            </div>
+
+            {/* Bottom 2 Pies */}
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-bold text-slate-800 text-sm">Queries Status <span className="text-blue-500 font-normal text-xs">(View)</span></h3>
+              </div>
+              <div className="flex-1 min-h-[160px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={queriesData} innerRadius={45} outerRadius={65} paddingAngle={2} dataKey="value" stroke="none">
+                      {queriesData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={PIE_COLORS.Queries[index % PIE_COLORS.Queries.length]} />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip />
+                    <Legend iconType="square" layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-bold text-slate-800 text-sm">Feedback Overview <span className="text-blue-500 font-normal text-xs">(View)</span></h3>
+              </div>
+              <div className="flex-1 min-h-[160px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={feedbackData} innerRadius={45} outerRadius={65} paddingAngle={2} dataKey="value" stroke="none">
+                      {feedbackData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={PIE_COLORS.Feedback[index % PIE_COLORS.Feedback.length]} />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip />
+                    <Legend iconType="square" layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
           </div>
+
+          {/* Quick Stats */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center justify-between px-10">
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-wide">Quick Statistics</div>
+            <div className="text-center">
+              <p className="text-xl font-black text-blue-600">91.50%</p>
+              <p className="text-xs text-slate-400 font-medium">Customer Satisfaction</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xl font-black text-orange-500">91.17%</p>
+              <p className="text-xs text-slate-400 font-medium">Resolution Rate</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xl font-black text-purple-600">0</p>
+              <p className="text-xs text-slate-400 font-medium">Total Users</p>
+            </div>
+          </div>
+
         </div>
       </div>
-
-
-      {/* ========================================================================= */}
-      {/* 4. BELOW THE HERO — 4 COMPACT INTELLIGENCE AREAS                           */}
-      {/* ========================================================================= */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-        
-        {/* Area 1: APPLICATIONS */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center space-x-2 text-slate-900 font-black text-xs uppercase tracking-wider">
-                <FileText size={15} className="text-blue-600" />
-                <span>Applications</span>
-              </div>
-              <span className="text-[10px] font-bold text-slate-400">Clearance Pipeline</span>
-            </div>
-
-            <div className="mt-4 space-y-3 text-xs">
-              <div className="flex items-center justify-between p-2 rounded-lg bg-blue-50/70 border border-blue-100">
-                <span className="text-slate-700 font-semibold">Active</span>
-                <span className="font-black text-blue-800 text-sm">{intelligenceStats.apps.active}</span>
-              </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-amber-50/80 border border-amber-200">
-                <span className="text-slate-800 font-semibold flex items-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span>
-                  At Risk
-                </span>
-                <span className="font-black text-amber-800 text-sm">{intelligenceStats.apps.atRisk}</span>
-              </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <span className="text-slate-600 font-medium">Completed</span>
-                <span className="font-black text-emerald-700 text-sm">{intelligenceStats.apps.completed}</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setCurrentView('applications')}
-            className="mt-4 pt-3 border-t border-slate-100 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center justify-between w-full"
-          >
-            <span>View All Applications</span>
-            <ChevronRight size={14} />
-          </button>
-        </div>
-
-        {/* Area 2: DOCUMENTS */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center space-x-2 text-slate-900 font-black text-xs uppercase tracking-wider">
-                <ShieldCheck size={15} className="text-emerald-600" />
-                <span>Documents</span>
-              </div>
-              <span className="text-[10px] font-bold text-slate-400">Vault Health</span>
-            </div>
-
-            <div className="mt-4 space-y-3 text-xs">
-              <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50/70 border border-emerald-100">
-                <span className="text-slate-700 font-semibold">Healthy (300 DPI)</span>
-                <span className="font-black text-emerald-800 text-sm">{intelligenceStats.docs.healthy}</span>
-              </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <span className="text-slate-700 font-semibold">Needs Attention</span>
-                <span className="font-black text-amber-700 text-sm">{intelligenceStats.docs.needsAttention}</span>
-              </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-red-50/70 border border-red-100">
-                <span className="text-slate-800 font-semibold flex items-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></span>
-                  Missing
-                </span>
-                <span className="font-black text-red-700 text-sm">{intelligenceStats.docs.missing}</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setCurrentView('docs')}
-            className="mt-4 pt-3 border-t border-slate-100 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center justify-between w-full"
-          >
-            <span>Open Document Vault</span>
-            <ChevronRight size={14} />
-          </button>
-        </div>
-
-        {/* Area 3: COMPLIANCE */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center space-x-2 text-slate-900 font-black text-xs uppercase tracking-wider">
-                <Calendar size={15} className="text-indigo-600" />
-                <span>Compliance</span>
-              </div>
-              <span className="text-[10px] font-bold text-slate-400">Statutory RTS</span>
-            </div>
-
-            <div className="mt-4 space-y-3 text-xs">
-              <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Upcoming Deadline</span>
-                <p className="font-extrabold text-slate-900 text-xs mt-0.5 truncate">
-                  {intelligenceStats.compliance.upcomingDeadline}
-                </p>
-                <p className="text-[11px] text-slate-500 mt-0.5">MPCB Water & Air Act filing</p>
-              </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50/70 border border-emerald-100">
-                <span className="text-slate-700 font-semibold">Overdue Items</span>
-                <span className="font-black text-emerald-800 text-sm">
-                  {intelligenceStats.compliance.overdueCount} (Zero Overdue)
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setCurrentView('calendar')}
-            className="mt-4 pt-3 border-t border-slate-100 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center justify-between w-full"
-          >
-            <span>Compliance Calendar</span>
-            <ChevronRight size={14} />
-          </button>
-        </div>
-
-        {/* Area 4: OPPORTUNITIES */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center space-x-2 text-slate-900 font-black text-xs uppercase tracking-wider">
-                <Award size={15} className="text-amber-600" />
-                <span>Opportunities</span>
-              </div>
-              <span className="text-[10px] font-bold text-slate-400">Subsidies & GR</span>
-            </div>
-
-            <div className="mt-4 space-y-2 text-xs">
-              <div className="p-2 rounded-lg bg-amber-50/60 border border-amber-100">
-                <span className="text-[10px] uppercase font-bold text-amber-800">Eligible Scheme</span>
-                <p className="font-bold text-slate-900 truncate">{intelligenceStats.opportunities.scheme}</p>
-                <p className="text-[11px] text-emerald-700 font-black">{intelligenceStats.opportunities.incentives}</p>
-              </div>
-              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <span className="text-[10px] uppercase font-bold text-slate-400">New Regulatory Change</span>
-                <p className="font-bold text-slate-800 truncate">{intelligenceStats.opportunities.regulatory}</p>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setCurrentView('incentive_calc')}
-            className="mt-4 pt-3 border-t border-slate-100 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center justify-between w-full"
-          >
-            <span>Calculate PSI Subsidies</span>
-            <ChevronRight size={14} />
-          </button>
-        </div>
-
-      </div>
-
-
-
-
-
-      {/* ========================================================================= */}
-      {/* MODAL: TAKE ACTION — UPLOAD FIRE NOC DOCUMENT                               */}
-      {/* ========================================================================= */}
-      {actionModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black">
-                  <Upload size={18} />
-                </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-slate-900">
-                    Upload Fire NOC Document
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Required to clear bottleneck for 2 waiting clearances
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  setActionModalOpen(false);
-                  setUploadStep('idle');
-                }}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {uploadStep === 'idle' && (
-              <div className="space-y-4">
-                {/* Upload Zone */}
-                <div 
-                  onClick={handleCompleteUpload}
-                  className="border-2 border-dashed border-slate-300 hover:border-amber-500 bg-slate-50/70 hover:bg-amber-50/30 rounded-2xl p-6 text-center cursor-pointer transition-all"
-                >
-                  <div className="w-12 h-12 mx-auto rounded-full bg-white shadow-xs border border-slate-200 flex items-center justify-center text-slate-600 mb-2">
-                    <Upload size={22} className="text-amber-600" />
-                  </div>
-                  <p className="text-xs font-bold text-slate-800">
-                    Click to attach Provisional / Final Fire NOC (PDF)
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Auto-scanned for 300 DPI vector clarity & Chief Fire Officer DSC
-                  </p>
-                  <div className="mt-3 inline-flex items-center space-x-1 text-[11px] text-amber-700 bg-amber-100/70 px-2.5 py-1 rounded-md font-semibold">
-                    <span>Sample: MH_FIRE_NOC_PUN_2026.pdf (1.4 MB)</span>
-                  </div>
-                </div>
-
-                {/* Approvals to be unblocked */}
-                <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs space-y-1.5">
-                  <span className="font-bold text-slate-900 block">Approvals that will be unlocked:</span>
-                  <div className="flex items-center space-x-2 text-slate-700">
-                    <CheckCircle2 size={13} className="text-emerald-600" />
-                    <span>Factory Building Plan Approval (DISH-PLN-01)</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-slate-700">
-                    <CheckCircle2 size={13} className="text-emerald-600" />
-                    <span>MPCB Consent to Establish (MPCB-CTE-01)</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-end space-x-3 pt-2">
-                  <button
-                    onClick={() => setActionModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleCompleteUpload}
-                    className="px-5 py-2.5 rounded-xl text-xs font-extrabold text-slate-950 bg-amber-400 hover:bg-amber-300 shadow-md transition-all flex items-center space-x-2"
-                  >
-                    <span>Upload & Verify with AI</span>
-                    <ArrowRight size={14} />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {uploadStep === 'validating' && (
-              <div className="py-8 text-center space-y-3">
-                <div className="w-12 h-12 mx-auto rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center">
-                  <Sparkles size={24} className="text-blue-600 animate-spin" />
-                </div>
-                <p className="text-sm font-black text-slate-900">
-                  UdyogSetu AI Scanning Document Integrity...
-                </p>
-                <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                  Validating 300 DPI vector clarity, Chief Fire Officer digital signature, and MIDC survey matching.
-                </p>
-              </div>
-            )}
-
-            {uploadStep === 'completed' && (
-              <div className="py-6 text-center space-y-4">
-                <div className="w-12 h-12 mx-auto rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                  <CheckCircle size={28} />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-base font-black text-slate-900">
-                    Fire NOC Successfully Verified!
-                  </h4>
-                  <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                    The document has been securely stamped into your Vault. Statutory scrutiny has resumed for DISH and MPCB.
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
-                    setActionModalOpen(false);
-                    setUploadStep('idle');
-                  }}
-                  className="px-6 py-2.5 rounded-xl text-xs font-extrabold text-white bg-slate-900 hover:bg-slate-800 shadow transition-all"
-                >
-                  Return to Dashboard
-                </button>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
 
     </div>
   );

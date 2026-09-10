@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.underline-links a {
+.underline-links a, .underline-links .is-link {
   text-decoration: underline !important;
 }

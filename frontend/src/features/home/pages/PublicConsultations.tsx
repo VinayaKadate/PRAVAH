@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { Megaphone, Calendar, MapPin, MessageSquare } from 'lucide-react';
-export const PublicConsultations = ({ consultations, onSubmitComment }) => {
+import { Megaphone, Calendar, MapPin, MessageSquare, Users, FileText, ArrowRight, BookOpen } from 'lucide-react';
+import { useMockApp } from '../../../contexts/MockAppContext';
+
+export const PublicConsultations = ({ onSubmitComment }) => {
+  const { consultations } = useMockApp();
   const [selectedItem, setSelectedItem] = useState(null);
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

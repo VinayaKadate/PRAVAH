@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { C, inputCls, inputStyle } from '../constants/theme';
 import { Btn } from '../components/common/Btn';
@@ -7,11 +7,18 @@ import { LogIn } from 'lucide-react';
 
 export function Login() {
   const [email, setEmail] = useState('demo@gmail.com');
-  const [password, setPassword] = useState('password123');
+  const [password, setPassword] = useState('Pravah@2026!');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+
+  React.useEffect(() => {
+    // Force set on mount to bypass React Fast Refresh keeping old state
+    setEmail('demo@gmail.com');
+    setPassword('Pravah@2026!');
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,7 +29,11 @@ export function Login() {
       if (user.role === 'officer') {
         navigate('/officer');
       } else {
-        navigate('/dashboard');
+        // If they are on the standalone login page or root, send to dashboard.
+        // If they are already on a private route (like /business), stay there!
+        if (location.pathname === '/login' || location.pathname === '/') {
+          navigate('/dashboard');
+        }
       }
     } catch (err) {
       setError("Failed to log in: " + (err.response?.data?.detail || err.message));

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { MessageSquare, Clock, Send, Upload } from 'lucide-react';
-export const DepartmentQueries = ({ queries, onAnswerQuery }) => {
+import { MessageSquare, Clock, Send, Upload, AlertCircle, CheckCircle2, ChevronDown, Check, Reply } from 'lucide-react';
+import { useMockApp } from '../../../contexts/MockAppContext';
+
+export const DepartmentQueries = ({ onAnswerQuery }) => {
+  const { queries } = useMockApp();
   const [selectedQuery, setSelectedQuery] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
