@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Bot, X, Send, Loader2 } from "lucide-react";
-import { C } from "../../constants/theme";
+import { Bot, X, Send, Loader2, Sparkles } from "lucide-react";
 
 export function ChatBot() {
   const [open, setOpen] = useState(false);
@@ -47,81 +46,77 @@ export function ChatBot() {
   return (
     <>
       {open && (
-        <div
-          className="fixed z-50 rounded overflow-hidden flex flex-col"
-          style={{
-            right: "1rem", bottom: "5rem", width: "min(22rem, calc(100vw - 2rem))",
-            height: "min(28rem, calc(100vh - 8rem))", background: C.white,
-            border: `1px solid ${C.line}`, boxShadow: "0 12px 32px rgba(6,42,79,0.22)",
-          }}
-        >
-          <div className="flex items-center justify-between px-4 py-3" style={{ background: C.navyDeep }}>
-            <div className="flex items-center gap-2">
-              <Bot size={18} color={C.saffron} />
-              <div>
-                <div className="text-sm font-bold" style={{ color: C.white }}>MAITRI assistant</div>
-                <div className="text-xs" style={{ color: "#8FB4D4" }}>Available round the clock</div>
-              </div>
-            </div>
-            <button onClick={() => setOpen(false)} aria-label="Close chat">
-              <X size={18} color="#8FB4D4" />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-3" style={{ background: C.bg }}>
-            {msgs.map((m, i) => (
-              <div key={i} className={`mb-2.5 flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div
-                  className="px-3 py-2 rounded text-sm leading-relaxed"
-                  style={{
-                    maxWidth: "85%",
-                    background: m.role === "user" ? C.navy : C.white,
-                    color: m.role === "user" ? C.white : C.ink,
-                    border: m.role === "user" ? "none" : `1px solid ${C.line}`,
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {m.text}
+        <div className="fixed bottom-20 right-6 z-50 max-w-sm w-full sm:w-88 flex flex-col h-[450px]">
+          <div className="bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 backdrop-blur-md flex flex-col h-full overflow-hidden">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-slate-800">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  <Bot size={18} />
+                </div>
+                <div>
+                  <div className="font-extrabold text-sm tracking-tight text-white">Ask MAITRI</div>
+                  <div className="text-[10px] font-medium text-slate-400">Available round the clock</div>
                 </div>
               </div>
-            ))}
-            {busy && (
-              <div className="flex items-center gap-2 text-xs px-1" style={{ color: C.slate }}>
-                <Loader2 size={13} className="animate-spin" /> Typing…
-              </div>
-            )}
-            <div ref={endRef} />
-          </div>
+              <button onClick={() => setOpen(false)} aria-label="Close chat" className="text-slate-400 hover:text-white transition-colors">
+                <X size={18} />
+              </button>
+            </div>
 
-          <div className="flex items-center gap-2 p-2" style={{ borderTop: `1px solid ${C.line}` }}>
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder="Ask about eligibility or documents"
-              className="flex-1 px-3 py-2 text-sm focus:outline-none"
-              style={{ color: C.ink }}
-            />
-            <button
-              onClick={send}
-              disabled={busy}
-              className="p-2 rounded"
-              style={{ background: C.saffron, opacity: busy ? 0.6 : 1 }}
-              aria-label="Send message"
-            >
-              <Send size={16} color={C.white} />
-            </button>
+            {/* Chat Area */}
+            <div className="flex-1 overflow-y-auto p-4 bg-slate-900/50 space-y-3">
+              {msgs.map((m, i) => (
+                <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`px-3 py-2 rounded-xl text-xs leading-relaxed max-w-[85%] ${
+                      m.role === "user" 
+                        ? "bg-blue-600 text-white rounded-br-sm" 
+                        : "bg-slate-800 text-slate-200 border border-slate-700/50 rounded-bl-sm"
+                    }`}
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    {m.text}
+                  </div>
+                </div>
+              ))}
+              {busy && (
+                <div className="flex items-center gap-2 text-[11px] text-slate-400 px-1">
+                  <Loader2 size={12} className="animate-spin" /> Typing…
+                </div>
+              )}
+              <div ref={endRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="p-3 border-t border-slate-800 bg-slate-900">
+              <div className="flex items-center space-x-2">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && send()}
+                  placeholder="Ask about eligibility or documents..."
+                  className="flex-1 bg-slate-950 text-white text-xs px-3 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:border-blue-500 placeholder-slate-500"
+                />
+                <button
+                  onClick={send}
+                  disabled={busy}
+                  className="p-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:text-slate-400 text-white rounded-xl transition-colors shrink-0"
+                  aria-label="Send message"
+                >
+                  <Send size={14} />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
+      {/* Floating Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed z-50 flex items-center gap-2 px-4 py-3 rounded-full font-semibold text-sm"
-        style={{
-          right: "1rem", bottom: "1.25rem", background: C.navyDeep, color: C.white,
-          boxShadow: "0 8px 20px rgba(6,42,79,0.4)",
-        }}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full font-semibold text-sm transition-all shadow-[0_8px_20px_rgba(15,23,42,0.6)] bg-slate-900 text-white border border-slate-700/80 hover:bg-slate-800 hover:scale-105 active:scale-95"
       >
         {open ? <X size={18} /> : <Bot size={18} />}
         {!open && <span className="hidden sm:inline">Ask MAITRI</span>}
