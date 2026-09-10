@@ -9,7 +9,7 @@ We are tracking progress against the `phases (1).md` master document.
 ### ✅ Completed or Nearly Completed Phases
 
 * **Phase 1: Onboarding & Identity** (Mostly Complete)
-  * *Done:* Registration form, Login screen, Business Profile data collection, and robust Firebase JWT Authentication via FastAPI.
+  * *Done:* Registration form, Login screen (with prefilled demo credentials), Business Profile data collection, and robust Firebase JWT Authentication via FastAPI.
 * **Phase 2: Factory & Plot Setup** (UI Complete)
   * *Done:* Factory Units and MIDC Plot management UI (`FactoryUnits.tsx`, `MyBusiness.jsx`).
 * **Phase 3: Document Repository** (UI Complete)
@@ -18,8 +18,10 @@ We are tracking progress against the `phases (1).md` master document.
   * *Done:* Multi-section questionnaire to derive required approvals (`InvestorWizard.tsx`).
 * **Phase 6: CAF & Payment History** (UI Complete)
   * *Done:* Common Application Form generation and payment history UI (`CAFModal.tsx`, `PaymentsHistory.tsx`).
-* **Phase 9: Dashboard (Landing Analytics)** (UI Complete)
-  * *Done:* Comprehensive `InvestorDashboard.tsx` built with stat tiles and charts.
+* **Phase 7: Support & Feedback** (UI Complete)
+  * *Done:* UI for Grievances (`DepartmentQueries.tsx`), Feedback form routing, Incentive Calculator, and Public Consultations.
+* **Phase 9: Dashboard (Landing Analytics)** (UI Complete & Optimized)
+  * *Done:* Comprehensive `InvestorDashboard.tsx` built with stat tiles and charts. Fully optimized layout for above-the-fold graph visibility without scrolling.
 * **Phase 11: Document Pre-Validation & OCR Auto-Validator** (Completed!)
   * *Done:* Implemented full EasyOCR and PyMuPDF pipeline in FastAPI (`ocr_service.py`). Real-time validation for Name Matching, Expiry Checks (Regex), and Signature presence.
 * **Phase 19: Officer SLA Dashboard** (UI Complete)
@@ -27,14 +29,17 @@ We are tracking progress against the `phases (1).md` master document.
 * **Phase 20: Duplicate / Fraud Detection** (UI Complete)
   * *Done:* Matching/near-matching detection UI via `FraudRadar.tsx`.
 
+### 🌟 Cross-Phase Enhancements (Completed)
+* **Global Translations:** Implemented dynamic Marathi & English translations across Navigation, Dashboard, and UI components via `TranslationContext`.
+* **Accessibility (A11y):** Added contrast-friendly link underlining, dynamic font scaling, and global accessibility toggles.
+* **Navigation & Routing:** Hierarchical drop-down menus, protected route barriers, and seamless login redirects.
+
 ### 🔄 In Progress (UI Built, Pending DB Integration)
 
 * **Phase 0: Foundation & Infrastructure**
   * *Done:* Monorepo structure, React/Tailwind frontend, FastAPI backend, base Auth scaffold.
 * **Phase 5: Service Catalogue, Applications & Tracking**
   * *Done:* UI for Services Available and Services Applied, backend API routes scaffolded.
-* **Phase 7: Support, Grievance, Incentive Calculator**
-  * *Done:* UI for Grievances (`DepartmentQueries.tsx`), Incentive Calculator, and Public Consultations.
 * **Phase 18: AI Query Assistant**
   * *Done:* ChatBot UI widget scaffolded.
 
@@ -53,7 +58,9 @@ We are tracking progress against the `phases (1).md` master document.
 
 ---
 
-## 🛠️ How to Run Locally
+## 🛠️ How to Run Locally (After Pulling)
+
+Whenever you pull the latest code (`git pull origin main`), please ensure you re-install dependencies in case any new packages were added.
 
 ### Prerequisites
 1. **Node.js**: Download and install from [nodejs.org](https://nodejs.org/) (needed for the frontend).
