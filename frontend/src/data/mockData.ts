@@ -1,16 +1,16 @@
-import { 
-  UserProfile, FactoryUnit, ApplicationItem, DocumentItem, 
-  ComplianceItem, RegulatoryCircular, SchemeBenefit, GrievanceItem, 
-  DepartmentQuery, PaymentChallan, FraudAlert, AuditLog, PublicConsultation 
+import {
+  UserProfile, FactoryUnit, ApplicationItem, DocumentItem,
+  ComplianceItem, RegulatoryCircular, SchemeBenefit, GrievanceItem,
+  DepartmentQuery, PaymentChallan, FraudAlert, AuditLog, PublicConsultation
 } from '../types';
 
 export const INITIAL_USERS: Record<string, UserProfile> = {
-  'user_1': { 
-    id: 'user_1', 
-    name: 'Tata Motors Maharashtra Assembly Unit', 
+  'user_1': {
+    id: 'user_1',
+    name: 'Tata Motors Maharashtra Assembly Unit',
     email: 'regulatory.affairs@tatamotors.com',
     phone: '+91 98230 11223',
-    type: 'citizen', 
+    type: 'citizen',
     industry: 'Automotive & Heavy Manufacturing',
     panNumber: 'AAACT2001A',
     gstin: '27AAACT2001A1Z5',
@@ -19,12 +19,12 @@ export const INITIAL_USERS: Record<string, UserProfile> = {
     employment: 1200,
     designation: 'VP - Industrial Infrastructure'
   },
-  'user_2': { 
-    id: 'user_2', 
-    name: 'Sahyadri Agri Processing Pvt Ltd', 
+  'user_2': {
+    id: 'user_2',
+    name: 'Sahyadri Agri Processing Pvt Ltd',
     email: 'compliance@sahyadriagro.in',
     phone: '+91 94222 55441',
-    type: 'citizen', 
+    type: 'citizen',
     industry: 'Food Processing & Agribusiness',
     panNumber: 'AALCS9912B',
     gstin: '27AALCS9912B1Z1',
@@ -33,14 +33,14 @@ export const INITIAL_USERS: Record<string, UserProfile> = {
     employment: 85,
     designation: 'Managing Director'
   },
-  'officer_1': { 
-    id: 'officer_1', 
-    name: 'Dr. S. K. Patil', 
+  'officer_1': {
+    id: 'officer_1',
+    name: 'Dr. S. K. Patil',
     email: 'sk.patil@maharashtra.gov.in',
     phone: '+91 20 2550 4400',
-    type: 'officer', 
-    department: 'MIDC / Directorate of Industries', 
-    designation: 'Senior Nodal Clearance Officer & Joint Director' 
+    type: 'officer',
+    department: 'MIDC / Directorate of Industries',
+    designation: 'Senior Nodal Clearance Officer & Joint Director'
   },
   'officer_2': {
     id: 'officer_2',
@@ -87,86 +87,86 @@ export const INITIAL_FACTORY_UNITS: FactoryUnit[] = [
 ];
 
 export const INITIAL_APPLICATIONS: ApplicationItem[] = [
-  { 
-    id: 'APP-1001', 
-    userId: 'user_1', 
+  {
+    id: 'APP-1001',
+    userId: 'user_1',
     unitId: 'UNIT-PUN-01',
-    name: 'Land Allotment & Possession Order', 
+    name: 'Land Allotment & Possession Order',
     serviceCode: 'MIDC-LAN-01',
     department: 'MIDC',
-    status: 'approved', 
-    submittedAt: '2026-06-10', 
+    status: 'approved',
+    submittedAt: '2026-06-10',
     approvedAt: '2026-06-28',
-    slaDays: 30, 
-    dependencies: [], 
+    slaDays: 30,
+    dependencies: [],
     parallelGroup: 'Phase-1',
     feeAmount: 150000,
     feePaid: true,
     assignedOfficerId: 'officer_1',
     scrutinyNotes: ['All plot survey demarcation coordinates verified against Chakan Phase II master DP.']
   },
-  { 
-    id: 'APP-1002', 
-    userId: 'user_1', 
+  {
+    id: 'APP-1002',
+    userId: 'user_1',
     unitId: 'UNIT-PUN-01',
-    name: 'Consent to Establish (CTE - Red Category)', 
+    name: 'Consent to Establish (CTE - Red Category)',
     serviceCode: 'MPCB-CTE-04',
     department: 'Maharashtra Pollution Control Board (MPCB)',
-    status: 'approved', 
-    submittedAt: '2026-07-01', 
+    status: 'approved',
+    submittedAt: '2026-07-01',
     approvedAt: '2026-07-25',
-    slaDays: 45, 
-    dependencies: ['APP-1001'], 
+    slaDays: 45,
+    dependencies: ['APP-1001'],
     parallelGroup: 'Phase-2',
     feeAmount: 375000,
     feePaid: true,
     assignedOfficerId: 'officer_2',
     scrutinyNotes: ['ETP and STP plant capacity 300 KLD compliant with Zero Liquid Discharge (ZLD) conditions.']
   },
-  { 
-    id: 'APP-1003', 
-    userId: 'user_1', 
+  {
+    id: 'APP-1003',
+    userId: 'user_1',
     unitId: 'UNIT-PUN-01',
-    name: 'Fire No Objection Certificate (Provisional NOC)', 
+    name: 'Fire No Objection Certificate (Provisional NOC)',
     serviceCode: 'FIRE-NOC-02',
     department: 'Directorate of Maharashtra Fire Services',
-    status: 'action_required', 
-    submittedAt: '2026-08-01', 
-    slaDays: 30, 
-    dependencies: ['APP-1001'], 
+    status: 'action_required',
+    submittedAt: '2026-08-01',
+    slaDays: 30,
+    dependencies: ['APP-1001'],
     parallelGroup: 'Phase-2',
     feeAmount: 85000,
     feePaid: true,
     rejectionReason: 'Architect blueprint resolution illegible (< 300 DPI). Structural engineer digital signature unverified.',
     assignedOfficerId: 'officer_1'
   },
-  { 
-    id: 'APP-1004', 
-    userId: 'user_1', 
+  {
+    id: 'APP-1004',
+    userId: 'user_1',
     unitId: 'UNIT-PUN-01',
-    name: 'Factory Building Plan Approval & Safety License', 
+    name: 'Factory Building Plan Approval & Safety License',
     serviceCode: 'DISH-PLN-01',
     department: 'DISH (Directorate of Industrial Safety & Health)',
-    status: 'pending', 
-    submittedAt: '2026-08-12', 
-    slaDays: 30, 
-    dependencies: ['APP-1002', 'APP-1003'], 
+    status: 'pending',
+    submittedAt: '2026-08-12',
+    slaDays: 30,
+    dependencies: ['APP-1002', 'APP-1003'],
     parallelGroup: 'Phase-3',
     feeAmount: 120000,
     feePaid: true,
     assignedOfficerId: 'officer_1'
   },
-  { 
-    id: 'APP-1005', 
-    userId: 'user_1', 
+  {
+    id: 'APP-1005',
+    userId: 'user_1',
     unitId: 'UNIT-PUN-01',
-    name: 'High Tension (HT) 33kV Power Connection Sanction', 
+    name: 'High Tension (HT) 33kV Power Connection Sanction',
     serviceCode: 'MSED-HT-01',
     department: 'MSEDCL',
-    status: 'locked', 
-    submittedAt: null, 
-    slaDays: 21, 
-    dependencies: ['APP-1004'], 
+    status: 'locked',
+    submittedAt: null,
+    slaDays: 21,
+    dependencies: ['APP-1004'],
     parallelGroup: 'Phase-4',
     feeAmount: 540000,
     feePaid: false
@@ -189,58 +189,58 @@ export const INITIAL_APPLICATIONS: ApplicationItem[] = [
 ];
 
 export const INITIAL_DOCUMENTS: DocumentItem[] = [
-  { 
-    id: 'DOC-101', 
-    userId: 'user_1', 
-    type: 'Land Allotment Letter', 
+  {
+    id: 'DOC-101',
+    userId: 'user_1',
+    type: 'Land Allotment Letter',
     category: 'Legal',
-    status: 'verified', 
-    expiry: 'N/A', 
-    uploadDate: '2026-06-10', 
+    status: 'verified',
+    expiry: 'N/A',
+    uploadDate: '2026-06-10',
     fileSize: '2.4 MB',
     readability: '300 DPI Vector (Passed)',
     digitalSignature: 'MIDC Registrar Verified (Class 3 DSC)',
     addressMatch: 'Exact Match with MIDC Plot E-14/2'
   },
-  { 
-    id: 'DOC-102', 
-    userId: 'user_1', 
-    type: 'Environmental Impact Assessment (EIA)', 
+  {
+    id: 'DOC-102',
+    userId: 'user_1',
+    type: 'Environmental Impact Assessment (EIA)',
     category: 'Environmental',
-    status: 'verified', 
-    expiry: '2029-07-01', 
-    uploadDate: '2026-07-01', 
+    status: 'verified',
+    expiry: '2029-07-01',
+    uploadDate: '2026-07-01',
     fileSize: '14.8 MB',
     readability: 'Passed',
     digitalSignature: 'QCI / NABET Accredited Consultant Seal',
     addressMatch: 'Plot E-14/2, Chakan Industrial Area'
   },
-  { 
-    id: 'DOC-103', 
-    userId: 'user_1', 
-    type: 'Factory Blueprint & Layout', 
+  {
+    id: 'DOC-103',
+    userId: 'user_1',
+    type: 'Factory Blueprint & Layout',
     category: 'Technical',
-    status: 'rejected', 
-    aiScore: 42, 
+    status: 'rejected',
+    aiScore: 42,
     issues: [
-      'Blueprint raster resolution low (96 DPI vs 300 DPI required)', 
+      'Blueprint raster resolution low (96 DPI vs 300 DPI required)',
       'Missing Structural Engineer Digital Stamp & Council Registration Number'
-    ], 
-    uploadDate: '2026-08-01', 
+    ],
+    uploadDate: '2026-08-01',
     fileSize: '1.1 MB',
     readability: 'Failed (<150 DPI)',
     digitalSignature: 'Signature Unverified',
     addressMatch: 'Match Confirmed',
     fixRecommendations: 'Export CAD file as vector PDF (minimum 300 DPI) and apply verified Structural Engineer digital signature.'
   },
-  { 
-    id: 'DOC-104', 
-    userId: 'user_1', 
-    type: 'Articles of Association (AOA)', 
+  {
+    id: 'DOC-104',
+    userId: 'user_1',
+    type: 'Articles of Association (AOA)',
     category: 'Legal',
-    status: 'verified', 
-    expiry: 'N/A', 
-    uploadDate: '2026-06-05', 
+    status: 'verified',
+    expiry: 'N/A',
+    uploadDate: '2026-06-05',
     fileSize: '850 KB',
     readability: 'Passed',
     digitalSignature: 'MCA Verified',
@@ -262,35 +262,35 @@ export const INITIAL_DOCUMENTS: DocumentItem[] = [
 ];
 
 export const INITIAL_COMPLIANCES: ComplianceItem[] = [
-  { 
-    id: 'COMP-201', 
-    userId: 'user_1', 
-    title: 'Half-Yearly Environmental Compliance Return (Form V)', 
-    department: 'MPCB', 
-    dueDate: '2026-09-30', 
-    status: 'upcoming', 
+  {
+    id: 'COMP-201',
+    userId: 'user_1',
+    title: 'Half-Yearly Environmental Compliance Return (Form V)',
+    department: 'MPCB',
+    dueDate: '2026-09-30',
+    status: 'upcoming',
     category: 'Environmental',
     penaltyClause: '₹ 10,000 per month delay + show-cause notice under Water Act Sec 33A',
     frequency: 'Half-Yearly'
   },
-  { 
-    id: 'COMP-202', 
-    userId: 'user_1', 
-    title: 'Annual Boiler Inspector Certification Renewal', 
-    department: 'DISH', 
-    dueDate: '2026-09-15', 
-    status: 'overdue', 
+  {
+    id: 'COMP-202',
+    userId: 'user_1',
+    title: 'Annual Boiler Inspector Certification Renewal',
+    department: 'DISH',
+    dueDate: '2026-09-15',
+    status: 'overdue',
     category: 'Safety',
     penaltyClause: 'Immediate shutdown order of steam generation unit + prosecution under Indian Boilers Act',
     frequency: 'Annual'
   },
-  { 
-    id: 'COMP-203', 
-    userId: 'user_1', 
-    title: 'Quarterly Water Cess Return Filing', 
-    department: 'Water Resources Dept', 
-    dueDate: '2026-10-15', 
-    status: 'upcoming', 
+  {
+    id: 'COMP-203',
+    userId: 'user_1',
+    title: 'Quarterly Water Cess Return Filing',
+    department: 'Water Resources Dept',
+    dueDate: '2026-10-15',
+    status: 'upcoming',
     category: 'Taxation & Fees',
     penaltyClause: 'Interest @ 2% per month on unpaid cess arrears',
     frequency: 'Quarterly'
@@ -350,7 +350,7 @@ export const INITIAL_SCHEMES: SchemeBenefit[] = [
     matchScore: 94,
     status: 'eligible',
     reasons: [
-      'Unit located in Chakan MIDC (qualifies for Group C / D Large unit category)', 
+      'Unit located in Chakan MIDC (qualifies for Group C / D Large unit category)',
       'Proposed investment of ₹ 450 Crores qualifies for Mega / Large Industrial Project status',
       'Direct employment commitment (> 500 local workers from Maharashtra domiciles)'
     ],
