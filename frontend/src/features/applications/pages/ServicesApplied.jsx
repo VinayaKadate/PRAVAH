@@ -1,138 +1,117 @@
 import React, { useState } from "react";
-import { Loader2, CircleAlert, Check, Clock } from "lucide-react";
+import { Loader2, Check, Clock, AlertTriangle, ArrowRight, Network } from "lucide-react";
 import { SectionHead } from "../../../components/common/SectionHead";
 import { Btn } from "../../../components/common/Btn";
 import { C } from "../../../constants/theme";
-import apiClient from "../../../api/client";
 
 export function ServicesApplied() {
-  const [id, setId] = useState("");
-  const [state, setState] = useState("idle"); 
-  const [trackingData, setTrackingData] = useState(null);
-
-  const search = async () => {
-    const v = id.trim();
-    if (!v || v.length < 6) {
-      setState("notfound");
-      return;
-    }
-    setState("loading");
-    try {
-      const res = await apiClient.get(`/applications/${v}/track`);
-      setTrackingData(res.data.tracking_stages);
-      setState("found");
-    } catch (err) {
-      setState("notfound");
-    }
-  };
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [roadmap, setRoadmap] = useState(true); // Always show roadmap for demo purposes
 
   return (
-    <div className="px-4 py-12">
-      <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto space-y-6">
+      
+      <div className="flex items-start justify-between">
         <SectionHead
-          eyebrow="Real-time status"
-          title="Track your application to the officer's desk"
-          sub="Enter the acknowledgement number printed on your submission receipt. Any ID of six characters or more will show a sample file."
+          eyebrow="AI Approval Roadmap"
+          title="Project Dependency Graph"
+          sub="PRAVAH AI has analyzed your project profile and sequenced the required clearances to minimize delays."
         />
+        <Btn className="flex items-center gap-2">
+          <Network size={16} /> Re-Calculate Path
+        </Btn>
+      </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 p-2 rounded mb-8" style={{ background: C.white, border: `1px solid ${C.line}` }}>
-          <input
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && search()}
-            placeholder="e.g. MTR/2026/LAB/0084213"
-            className="flex-1 px-3 py-2.5 text-sm focus:outline-none"
-            style={{ color: C.ink }}
-          />
-          <Btn variant="navy" onClick={search}>Track application</Btn>
+      {/* AI Roadmap Visualization */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-8">
+        
+        <div className="p-5 bg-slate-50 border-b border-gray-200 flex items-center justify-between">
+          <div>
+            <h3 className="font-bold text-gray-900">Project: Sahyadri Precision Factory Setup</h3>
+            <p className="text-sm text-gray-500 mt-1">Estimated Total Time: 45 Days (Optimized by AI)</p>
+          </div>
+          <div className="flex items-center gap-4 text-sm">
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-green-500"></span> Cleared</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-amber-500"></span> Active</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-gray-300"></span> Blocked/Pending</span>
+          </div>
         </div>
 
-        {state === "loading" && (
-          <div className="p-10 rounded flex items-center justify-center gap-3" style={{ background: C.white, border: `1px solid ${C.line}` }}>
-            <Loader2 size={18} color={C.navy} className="animate-spin" />
-            <span className="text-sm" style={{ color: C.slate }}>Fetching status from the department server…</span>
-          </div>
-        )}
-
-        {state === "notfound" && (
-          <div className="p-5 rounded flex items-start gap-3" style={{ background: "#FEF2F2", border: "1px solid #FCA5A5" }}>
-            <CircleAlert size={18} color="#B91C1C" className="mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold" style={{ color: "#7F1D1D" }}>No application found for that number.</p>
-              <p className="text-sm mt-1" style={{ color: "#991B1B" }}>
-                Check the acknowledgement receipt — the number starts with MTR and is at least six characters.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {state === "found" && trackingData && (
-          <div className="rounded overflow-hidden" style={{ background: C.white, border: `1px solid ${C.line}` }}>
-            <div className="p-6 grid sm:grid-cols-3 gap-4" style={{ borderBottom: `1px solid ${C.line}` }}>
-              {[
-                ["Service", "Factory licence (Section 6)"],
-                ["Applicant", "Sahyadri Precision Components Pvt. Ltd."],
-                ["Submitted on", "18 August 2026"],
-              ].map(([k, v]) => (
-                <div key={k}>
-                  <div className="text-xs mb-1" style={{ color: C.slate }}>{k}</div>
-                  <div className="text-sm font-semibold" style={{ color: C.ink }}>{v}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-6">
-              {trackingData.map((s, i) => {
-                const isCompleted = s.status === "completed";
-                const active = s.status === "in_progress";
-                const color = isCompleted ? C.green : active ? C.saffron : C.line;
-                return (
-                  <div key={s.name} className="flex gap-4">
-                    <div className="flex flex-col items-center">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                        style={{ background: isCompleted || active ? color : C.white, border: `2px solid ${color}` }}
-                      >
-                        {isCompleted
-                          ? <Check size={15} color={C.white} />
-                          : <span className="text-xs font-bold" style={{ color: active ? C.white : C.slate }}>{i + 1}</span>}
-                      </div>
-                      {i < trackingData.length - 1 && (
-                        <div className="w-0.5 flex-1 my-1" style={{ background: isCompleted ? C.green : C.line, minHeight: "2.25rem" }} />
-                      )}
-                    </div>
-                    <div className="pb-6 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-semibold" style={{ color: isCompleted || active ? C.ink : C.slate }}>
-                          {s.name}
-                        </span>
-                        {active && (
-                          <span className="text-xs px-2 py-0.5 rounded font-semibold" style={{ background: C.saffronLight, color: C.saffron }}>
-                            In progress
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm mt-0.5" style={{ color: C.slate }}>{s.desc}</p>
-                      {(isCompleted || active) && (
-                        <p className="text-xs mt-1" style={{ color: C.slate }}>
-                          Day {s.days} · statutory limit {s.days + 7} days
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-
-              <div className="p-4 rounded flex items-start gap-3" style={{ background: C.bg }}>
-                <Clock size={17} color={C.navy} className="mt-0.5 shrink-0" />
-                <p className="text-sm" style={{ color: C.slate }}>
-                  If a stage exceeds its statutory limit, the file escalates automatically to the next authority
-                  and you can raise a grievance against the delay from this screen.
-                </p>
+        <div className="p-8 overflow-x-auto">
+          {/* Node Based Dependency Flow */}
+          <div className="min-w-[800px] flex items-center justify-between">
+            
+            {/* Stage 1: Pre-Establishment */}
+            <div className="flex flex-col items-center">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-6">Phase 1: Foundation</h4>
+              <div className="relative bg-green-50 border-2 border-green-500 text-green-800 p-4 rounded-lg w-56 text-center shadow-sm">
+                <Check size={20} className="mx-auto mb-2 text-green-600" />
+                <h5 className="font-bold text-sm">Land Allotment (MIDC)</h5>
+                <p className="text-xs mt-1">Cleared: Aug 12, 2026</p>
               </div>
             </div>
+
+            <ArrowRight className="text-gray-300 mx-4" size={32} />
+
+            {/* Stage 2: Parallel NOCs */}
+            <div className="flex flex-col items-center">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-6">Phase 2: Parallel Approvals</h4>
+              <div className="space-y-4">
+                <div className="relative bg-amber-50 border-2 border-amber-500 text-amber-900 p-4 rounded-lg w-56 text-center shadow-sm">
+                  <div className="absolute -top-3 -right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow animate-pulse">SLA RISK</div>
+                  <Clock size={20} className="mx-auto mb-2 text-amber-600" />
+                  <h5 className="font-bold text-sm">Fire NOC</h5>
+                  <p className="text-xs mt-1">Day 12 / 15 (Delayed)</p>
+                </div>
+                <div className="relative bg-green-50 border-2 border-green-500 text-green-800 p-4 rounded-lg w-56 text-center shadow-sm">
+                  <Check size={20} className="mx-auto mb-2 text-green-600" />
+                  <h5 className="font-bold text-sm">Tree Cutting NOC</h5>
+                  <p className="text-xs mt-1">Cleared: Aug 20, 2026</p>
+                </div>
+              </div>
+            </div>
+
+            <ArrowRight className="text-gray-300 mx-4" size={32} />
+
+            {/* Stage 3: Building Plan (Dependent on Fire NOC) */}
+            <div className="flex flex-col items-center">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-6">Phase 3: Construction</h4>
+              <div className="relative bg-gray-50 border-2 border-gray-300 text-gray-500 p-4 rounded-lg w-56 text-center opacity-70">
+                <AlertTriangle size={20} className="mx-auto mb-2 text-gray-400" />
+                <h5 className="font-bold text-sm">Building Plan Approval</h5>
+                <p className="text-xs mt-1">Blocked by: Fire NOC</p>
+              </div>
+            </div>
+
+            <ArrowRight className="text-gray-300 mx-4" size={32} />
+
+            {/* Stage 4: Factory License */}
+            <div className="flex flex-col items-center">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-6">Phase 4: Operations</h4>
+              <div className="relative bg-gray-50 border-2 border-gray-200 text-gray-400 p-4 rounded-lg w-56 text-center opacity-50">
+                <Clock size={20} className="mx-auto mb-2 text-gray-300" />
+                <h5 className="font-bold text-sm">Factory License</h5>
+                <p className="text-xs mt-1">Pending Pre-requisites</p>
+              </div>
+            </div>
+
           </div>
-        )}
+        </div>
+
+        {/* AI Insight Box */}
+        <div className="bg-blue-50 p-5 border-t border-blue-100 flex items-start gap-4">
+          <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mt-1">
+            <Network size={20} />
+          </div>
+          <div>
+            <h4 className="font-bold text-blue-900 mb-1">PRAVAH AI Insight</h4>
+            <p className="text-sm text-blue-800">
+              The Building Plan Approval is currently blocked because the Fire NOC is experiencing regional delays. 
+              <strong> Action Recommended:</strong> Prepare your factory site layouts now, so you can submit the Building Plan application the exact moment the Fire NOC is issued.
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );

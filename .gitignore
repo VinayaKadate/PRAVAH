@@ -27,6 +27,6 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Private Credentials (NOTE: keeping these commented out right now per user request, but usually these should be ignored!)
-# .env
-# firebase-credentials.json
+# Private Credentials (NEVER TRACK THESE)
+.env
+firebase-credentials.json

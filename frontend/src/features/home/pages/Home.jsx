@@ -7,6 +7,7 @@ import { C, inputCls, inputStyle } from "../../../constants/theme";
 import { T } from "../../../constants/translations";
 import { useCountUp } from "../../../hooks/useCountUp";
 import apiClient from "../../../api/client";
+import { useTranslation } from "../../../contexts/TranslationContext";
 
 const FEATURES = [
   { icon: FileCheck, title: "Single-window approvals", body: "One application, one set of documents. The portal routes your file to every department that has to sign off on it." },
@@ -19,8 +20,8 @@ const FEATURES = [
 
 import { Clock } from "lucide-react"; // moved up
 
-function Hero({ lang }) {
-  const t = T[lang];
+function Hero() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <div style={{ background: C.navyDeep }} className="relative overflow-hidden">
@@ -220,10 +221,10 @@ function Notices() {
   );
 }
 
-export function Home({ lang }) {
+export function Home() {
   return (
     <>
-      <Hero lang={lang} />
+      <Hero />
       <StatsBand />
       <Features />
       <WhyMaharashtra />
