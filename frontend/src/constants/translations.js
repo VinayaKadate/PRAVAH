@@ -2,7 +2,7 @@ export const T = {
   en: {
     govt: "Government of Maharashtra",
     dept: "Industries, Energy, Labour & Mining Department",
-    brand: "MAITRI",
+    brand: "PRAVAH",
     brandFull: "Maharashtra Industry, Trade and Investment Facilitation Cell",
     nav: {
       home: "Home", about: "About Us", services: "Services", track: "Track Application",
@@ -35,7 +35,7 @@ export const T = {
   mr: {
     govt: "महाराष्ट्र शासन",
     dept: "उद्योग, ऊर्जा, कामगार व खनिकर्म विभाग",
-    brand: "मैत्री",
+    brand: "प्रवाह",
     brandFull: "Maharashtra उद्योग, व्यापार व गुंतवणूक सुविधा कक्ष",
     nav: {
       home: "मुख्यपृष्ठ", about: "आमच्याविषयी", services: "सेवा", track: "अर्ज स्थिती",
