@@ -1,27 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { useAuth } from '../contexts/AuthContext';
 import { C, inputCls, inputStyle } from '../constants/theme';
 import { Btn } from '../components/common/Btn';
 import { LogIn } from 'lucide-react';
 
 export function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('demo@gmail.com');
+  const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      const user = await login(email, password);
+      if (user.role === 'officer') {
+        navigate('/officer');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
-      setError("Failed to log in: " + err.message);
+      setError("Failed to log in: " + (err.response?.data?.detail || err.message));
     }
     setLoading(false);
   };

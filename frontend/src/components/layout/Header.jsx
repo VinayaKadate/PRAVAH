@@ -8,13 +8,14 @@ import { AccessibilityBar } from "../accessibility/AccessibilityBar";
 import { useAuth } from "../../contexts/AuthContext";
 import { auth } from "../../firebase";
 import { signOut } from "firebase/auth";
+import { useTranslation } from "../../contexts/TranslationContext";
 
-export function Header({ lang, setLang, a11y, setA11y }) {
+export function Header({ a11y, setA11y }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser } = useAuth();
-  const t = T[lang];
+  const { t } = useTranslation();
   
   const handleSignOut = () => {
     signOut(auth);
@@ -56,7 +57,7 @@ export function Header({ lang, setLang, a11y, setA11y }) {
             {t.govt} &nbsp;·&nbsp; {t.dept}
           </span>
           <div className="hidden md:block">
-            <AccessibilityBar a11y={a11y} setA11y={setA11y} lang={lang} setLang={setLang} />
+            <AccessibilityBar a11y={a11y} setA11y={setA11y} />
           </div>
         </div>
       </div>
@@ -136,7 +137,7 @@ export function Header({ lang, setLang, a11y, setA11y }) {
       {open && (
         <div className="lg:hidden" style={{ background: C.navy }}>
           <div className="px-4 py-2">
-            <AccessibilityBar a11y={a11y} setA11y={setA11y} lang={lang} setLang={setLang} />
+            <AccessibilityBar a11y={a11y} setA11y={setA11y} />
           </div>
           {links.map(([k, label]) => (
             <button

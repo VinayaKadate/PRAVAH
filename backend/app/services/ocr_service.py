@@ -1,5 +1,5 @@
 import easyocr
-import fitz  # PyMuPDF
+import pymupdf  # Replaces deprecated fitz
 from PIL import Image
 import io
 import re
@@ -13,7 +13,7 @@ async def process_document_image(file_bytes: bytes, content_type: str, business_
     
     # 1. Handle PDFs by converting the first page to an image
     if content_type == 'application/pdf':
-        doc = fitz.open(stream=file_bytes, filetype="pdf")
+        doc = pymupdf.open(stream=file_bytes, filetype="pdf")
         if len(doc) == 0:
             return {"success": False, "proof": "❌ Error: The uploaded PDF is empty."}
         page = doc.load_page(0)

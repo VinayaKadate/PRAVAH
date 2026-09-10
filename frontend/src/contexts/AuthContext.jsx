@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
+import apiClient from '../api/client';
 
 const AuthContext = createContext();
 
@@ -9,16 +8,42 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const res = await apiClient.get('/auth/me');
+          setCurrentUser(res.data);
+        } catch (error) {
+          console.error("Auth check failed:", error);
+          localStorage.removeItem('token');
+        }
+      }
       setLoading(false);
-    });
-
-    return unsubscribe;
+    };
+    checkAuth();
   }, []);
+
+  const login = async (email, password) => {
+    const res = await apiClient.post('/auth/login', { email, password });
+    const { access_token } = res.data;
+    localStorage.setItem('token', access_token);
+    
+    // Fetch user details
+    const userRes = await apiClient.get('/auth/me');
+    setCurrentUser(userRes.data);
+    return userRes.data;
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setCurrentUser(null);
+  };
 
   const value = {
     currentUser,
+    login,
+    logout,
     loading
   };
 

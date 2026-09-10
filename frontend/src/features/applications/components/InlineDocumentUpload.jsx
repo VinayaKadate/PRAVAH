@@ -69,7 +69,29 @@ export function InlineDocumentUpload({ onValidationComplete }) {
             <div className={`text-sm px-4 py-2 rounded font-medium ${result.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
               {result.proof}
             </div>
-            <p className="text-xs mt-3 underline text-gray-500">Click to upload a different file</p>
+            
+            {result.success === false && (
+              <div 
+                className="mt-3 flex items-start gap-2 text-left bg-orange-50 p-3 rounded border border-orange-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <input 
+                  type="checkbox" 
+                  id="manualOverride" 
+                  className="mt-1"
+                  onChange={(e) => {
+                    if (onValidationComplete) {
+                      onValidationComplete(e.target.checked); // true unlocks the button
+                    }
+                  }}
+                />
+                <label htmlFor="manualOverride" className="text-sm text-orange-900 cursor-pointer">
+                  <strong>Submit for Manual Review:</strong> My document is correct, but the AI failed to read it properly. I request a manual check by an officer.
+                </label>
+              </div>
+            )}
+            
+            <p className="text-xs mt-3 underline text-gray-500">Click anywhere here to upload a different file</p>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-4">

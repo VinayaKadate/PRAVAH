@@ -5,64 +5,180 @@ import { SectionHead } from '../../../components/common/SectionHead';
 import { InlineDocumentUpload } from '../components/InlineDocumentUpload';
 import { Btn } from '../../../components/common/Btn';
 import { C, inputCls, inputStyle } from '../../../constants/theme';
+import { Check, ChevronRight, Loader2 } from 'lucide-react';
+
+const STEPS = ["Initiation", "Form Data", "Documents", "Payment"];
 
 export function ApplyService() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isSaving, setIsSaving] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
-  const [appName, setAppName] = useState('');
+  
+  const [formData, setFormData] = useState({
+    businessName: '',
+    unitId: '',
+    appType: 'Factory Licence'
+  });
 
   if (!currentUser) {
     return (
       <div className="px-4 py-12 text-center">
         <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
-        <p className="mb-6">You must be logged in to apply for a service.</p>
         <Btn onClick={() => navigate('/login')}>Login Now</Btn>
       </div>
     );
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (isValidated) {
-      alert("Application Submitted Successfully!");
-      navigate('/dashboard');
-    }
+  // Mocks backend draft saving
+  const handleNext = async () => {
+    setIsSaving(true);
+    // Simulate API call to save draft: POST/PATCH /api/applications/draft
+    await new Promise(resolve => setTimeout(resolve, 800));
+    setIsSaving(false);
+    setCurrentStep(prev => Math.min(prev + 1, 4));
+  };
+
+  const handleSubmit = async () => {
+    setIsSaving(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsSaving(false);
+    alert("Application Submitted Successfully!");
+    navigate('/dashboard');
   };
 
   return (
-    <div className="px-4 py-12" style={{ background: C.bg, minHeight: '80vh' }}>
-      <div className="max-w-2xl mx-auto bg-white p-8 rounded shadow">
-        <SectionHead
-          eyebrow="New Application"
-          title="Apply for Factory Licence"
-          sub="Complete the form below and upload your verified documents."
-        />
-        
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">Applicant Name</label>
-            <input 
-              type="text" 
-              className={inputCls} 
-              style={inputStyle} 
-              value={appName}
-              onChange={e => setAppName(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium mb-2">Incorporation Certificate (Required)</label>
-            <InlineDocumentUpload onValidationComplete={(isValid) => setIsValidated(isValid)} />
-          </div>
+    <div className="max-w-4xl mx-auto">
+      <SectionHead
+        eyebrow="New Application"
+        title="Apply for Factory Licence"
+        sub="Complete the multi-step form. Your progress is auto-saved as a draft."
+      />
 
-          <div className="pt-6 border-t">
-            <Btn className="w-full" disabled={!isValidated}>
-              {isValidated ? "Submit Application" : "Upload Document to Unlock Submit"}
-            </Btn>
+      {/* Stepper Header */}
+      <div className="flex items-center justify-between mt-8 mb-10 border-b pb-6" style={{ borderColor: C.line }}>
+        {STEPS.map((step, idx) => {
+          const stepNum = idx + 1;
+          const isActive = currentStep === stepNum;
+          const isPast = currentStep > stepNum;
+          return (
+            <div key={step} className="flex items-center">
+              <div 
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${isActive ? 'ring-4 ring-orange-100' : ''}`}
+                style={{ 
+                  background: isPast ? C.green : isActive ? C.saffron : C.bg,
+                  color: isPast || isActive ? C.white : C.slate,
+                  border: !isActive && !isPast ? `1px solid ${C.line}` : 'none'
+                }}
+              >
+                {isPast ? <Check size={16} /> : stepNum}
+              </div>
+              <span className={`ml-3 text-sm font-medium hidden md:block ${isActive ? 'text-navy-900' : 'text-gray-500'}`}>
+                {step}
+              </span>
+              {idx < STEPS.length - 1 && (
+                <div className="w-12 md:w-24 h-px mx-4" style={{ background: C.line }} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Stepper Content */}
+      <div className="bg-white p-6 md:p-10 rounded-xl shadow-sm border border-gray-100">
+        
+        {currentStep === 1 && (
+          <div className="space-y-6 animate-fade-in">
+            <h3 className="text-xl font-bold" style={{ color: C.navyDeep }}>Step 1: Business Details</h3>
+            <p className="text-sm text-gray-500 mb-6">Confirm your primary business details to initiate the application draft.</p>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Business Name</label>
+              <input 
+                type="text" 
+                className={inputCls} 
+                style={inputStyle} 
+                value={formData.businessName}
+                onChange={e => setFormData({...formData, businessName: e.target.value})}
+                placeholder="e.g. Tata Motors"
+              />
+            </div>
           </div>
-        </form>
+        )}
+
+        {currentStep === 2 && (
+          <div className="space-y-6 animate-fade-in">
+            <h3 className="text-xl font-bold" style={{ color: C.navyDeep }}>Step 2: Service-Specific Data</h3>
+            <p className="text-sm text-gray-500 mb-6">Enter the specifics required by the Factory Directorate.</p>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-1">Number of Employees</label>
+                <input type="number" className={inputCls} style={inputStyle} placeholder="100" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Total HP Power</label>
+                <input type="number" className={inputCls} style={inputStyle} placeholder="500" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 3 && (
+          <div className="space-y-6 animate-fade-in">
+            <h3 className="text-xl font-bold" style={{ color: C.navyDeep }}>Step 3: Upload Documents</h3>
+            <p className="text-sm text-gray-500 mb-6">Our AI will validate your documents instantly. You cannot proceed until mandatory documents are verified or submitted for manual review.</p>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">Incorporation Certificate (Required)</label>
+              <InlineDocumentUpload onValidationComplete={(isValid) => setIsValidated(isValid)} />
+            </div>
+          </div>
+        )}
+
+        {currentStep === 4 && (
+          <div className="space-y-6 animate-fade-in text-center py-8">
+            <h3 className="text-2xl font-bold mb-2" style={{ color: C.navyDeep }}>Final Review</h3>
+            <p className="text-sm text-gray-500 max-w-md mx-auto mb-8">
+              I hereby declare that all information provided is true. I understand that submitting false documents is punishable under law.
+            </p>
+            <div className="p-6 bg-gray-50 rounded-lg max-w-sm mx-auto text-left mb-8 border border-gray-200">
+              <div className="flex justify-between mb-2">
+                <span className="text-sm text-gray-500">Application Fee</span>
+                <span className="font-semibold">₹5,000</span>
+              </div>
+              <div className="flex justify-between border-t pt-2 mt-2 border-gray-200">
+                <span className="text-sm font-bold">Total to Pay</span>
+                <span className="font-bold text-lg text-green-700">₹5,000</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Stepper Footer / Controls */}
+        <div className="mt-10 pt-6 border-t flex items-center justify-between" style={{ borderColor: C.line }}>
+          <Btn 
+            variant="ghost" 
+            onClick={() => setCurrentStep(prev => prev - 1)}
+            disabled={currentStep === 1 || isSaving}
+          >
+            Back
+          </Btn>
+
+          {currentStep < 4 ? (
+            <Btn onClick={handleNext} disabled={isSaving || (currentStep === 3 && !isValidated)}>
+              {isSaving ? <Loader2 size={18} className="animate-spin" /> : "Save Draft & Next"} 
+              {!isSaving && <ChevronRight size={18} className="ml-1" />}
+            </Btn>
+          ) : (
+            <Btn onClick={handleSubmit} disabled={isSaving}>
+              {isSaving ? <Loader2 size={18} className="animate-spin mr-2" /> : <Check size={18} className="mr-2" />}
+              Pay & Submit
+            </Btn>
+          )}
+        </div>
       </div>
     </div>
   );

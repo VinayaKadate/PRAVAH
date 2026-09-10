@@ -119,8 +119,8 @@ export function ChatBot() {
         onClick={() => setOpen(!open)}
         className="fixed z-50 flex items-center gap-2 px-4 py-3 rounded-full font-semibold text-sm"
         style={{
-          right: "1rem", bottom: "1.25rem", background: C.saffron, color: C.white,
-          boxShadow: "0 8px 20px rgba(232,119,34,0.4)",
+          right: "1rem", bottom: "1.25rem", background: C.navyDeep, color: C.white,
+          boxShadow: "0 8px 20px rgba(6,42,79,0.4)",
         }}
       >
         {open ? <X size={18} /> : <Bot size={18} />}

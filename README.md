@@ -2,43 +2,54 @@
 
 This repository contains the full-stack monorepo for the PRAVAH / UdyogSetu portal.
 
-## 🚀 Current Project Status: Backend Database Integration
+## 🚀 Current Project Status & Phase Tracking
 
-We have successfully built the **frontend UI architecture** using React and Tailwind CSS, and we have scaffolded the **FastAPI backend**. We are currently in the process of integrating the real Database to replace the frontend's `mockData.js`.
+We are tracking progress against the `phases (1).md` master document. 
 
-### ✅ Phases Completed (Frontend + Basic API Routes)
-The following features currently have their UI built and their backend API routes scaffolded (awaiting Database connection):
-* **Phase 5:** Service Catalogue, Applications & Tracking (Services Available, Services Applied)
-* **Phase 7:** Support & Grievances (Incentive Calculator, Grievance Submission)
-* **Phase 9:** Dashboard (Investor Analytics, Charts)
-* **Phase 18:** AI Query Assistant (ChatBot widget)
+### ✅ Completed or Nearly Completed Phases
 
----
+* **Phase 1: Onboarding & Identity** (Mostly Complete)
+  * *Done:* Registration form, Login screen, Business Profile data collection, and robust Firebase JWT Authentication via FastAPI.
+  * *Remaining:* Email/Mobile OTP provider integration, Encrypted storage for Aadhaar/PAN.
+* **Phase 11: Document Pre-Validation & OCR Auto-Validator** (Completed!)
+  * *Done:* Implemented full EasyOCR and PyMuPDF pipeline in FastAPI (`ocr_service.py`). Includes real-time validation for Name Matching, Expiry Checks (Regex), and Signature presence against the logged-in user's Business Profile. The frontend `InlineDocumentUpload.jsx` provides instant ✅/❌ feedback.
 
-## 👥 Task Delegation: What Other Team Members Should Start
+### 🔄 In Progress (UI Built, Pending DB Integration)
 
-While the Database integration is being finalized, **other team members can immediately start building the Frontend UI and Backend APIs for the following unstarted phases:**
+* **Phase 0: Foundation & Infrastructure**
+  * *Done:* Monorepo structure, React/Tailwind frontend, FastAPI backend, base Auth scaffold.
+  * *Remaining:* PostgreSQL DB setup, Cloudinary integration, Docker deployment, full RBAC roles.
+* **Phase 5: Service Catalogue, Applications & Tracking**
+  * *Done:* UI for Services Available and Services Applied, backend API routes scaffolded.
+  * *Remaining:* Full DB integration, dynamic service-specific forms.
+* **Phase 7: Support, Grievance, Incentive Calculator**
+  * *Done:* UI for Grievances and Incentive Calculator.
+  * *Remaining:* Real DB connection and sentiment analysis logic.
+* **Phase 9: Dashboard (Landing Analytics)**
+  * *Done:* UI built with stat tiles and charts. Partial integration with Firestore.
+  * *Remaining:* Real data aggregation across all modules.
+* **Phase 18: AI Query Assistant**
+  * *Done:* ChatBot UI widget scaffolded.
+  * *Remaining:* NLP/LLM integration for conversational queries.
 
-### 1. Phase 1: Onboarding & Identity
-* **What to build:** Registration form (OTP, Business Profile), Login screen, and JWT Auth backend logic.
-* **Why it's important:** Every other module depends on having a logged-in user and a Business Profile.
+### ❌ Not Started (Needs Immediate Attention)
 
-### 2. Phase 2: Factory & Plot Setup
-* **What to build:** Forms to add/edit Factory Units and MIDC Plot Registrations.
-* **Why it's important:** Services applications need to be linked to a specific Factory Unit.
-
-### 3. Phase 3: Document Repository
-* **What to build:** "Document Drive" UI for uploading and managing certificates/documents.
-* **Why it's important:** We need this before we can attach real documents to applications.
-
-### 4. Phase 4: Investor Wizard
-* **What to build:** Multi-section questionnaire that derives a list of required approvals.
-* **Why it's important:** It's the core flow for a new investor to figure out what they need to apply for.
-
-### 5. Phase 6: CAF & Payment History
-* **What to build:** Common Application Form (CAF) generation and a Payment History table.
-
-*(Please refer to `phases (1).md` in the root for the detailed PRD and "Definition of Done" for each phase!)*
+* **Phase 2: Factory & Plot Setup** - Need forms for Factory Units and MIDC Plot registration.
+* **Phase 3: Document Repository** - Need the centralized "Document Drive" UI for global document management.
+* **Phase 4: Investor Wizard** - Need the multi-section questionnaire to derive required approvals.
+* **Phase 6: CAF & Payment History** - Need Common Application Form generation and payment history UI.
+* **Phase 8: Account & Delegation Settings** - Need Transactional User RBAC and delegation.
+* **Phase 10: AI Approval Roadmap** - Need dependency graph engine and sequencing logic.
+* **Phase 12: SLA Risk & Delay Prediction** - Need risk engine and scoring logic.
+* **Phase 13: Post-Approval Compliance Calendar** - Need automated compliance task generation.
+* **Phase 14: Regulatory Change Impact Engine** - Need regulatory notification matching.
+* **Phase 15: Incentive Readiness & Scenario Planner** - Need AI analysis on top of the Phase 7 calculator.
+* **Phase 16: Dashboard Next-Best-Action Banner** - Need priority action surfacing in Dashboard.
+* **Phase 17: Sentiment-Linked Grievance Triage** - Need negative sentiment escalation logic.
+* **Phase 19: Officer SLA Dashboard** - Need officer views and workload balancer.
+* **Phase 20: Duplicate / Fraud Detection** - Need matching/near-matching detection.
+* **Phase 21: District/Sector Bottleneck Heatmap** - Need geographic/sectoral delay visualization.
+* **Phase 22: Real Integrations & Launch Readiness** - Need Payment Gateway, SMS, Docker load testing.
 
 ---
 
@@ -78,7 +89,7 @@ The frontend requires Node.js and npm.
    ```bash
    cd frontend
    ```
-2. Install the necessary packages (including Axios):
+2. Install the necessary packages:
    ```bash
    npm install
    ```
@@ -88,4 +99,4 @@ The frontend requires Node.js and npm.
    ```
    *The frontend should now be running at `http://localhost:5173`. Open this URL in your browser to view the application!*
 
-> **Note on Environment Variables**: We are currently in the development phase, so the `.env` and `firebase-credentials.json` files have intentionally been pushed to the repository so you can clone and run it immediately. Before deploying to production, these must be added to `.gitignore` and removed from the repository.
+> **Note on Environment Variables**: We are currently in the development phase, so the `.env` file has intentionally been pushed to the repository so you can clone and run it immediately. `firebase-credentials.json` is ignored for security purposes. Before deploying to production, all secrets must be removed from the repository.
