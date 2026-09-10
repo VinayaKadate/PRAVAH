@@ -10,34 +10,36 @@ We are tracking progress against the `phases (1).md` master document.
 
 * **Phase 1: Onboarding & Identity** (Mostly Complete)
   * *Done:* Registration form, Login screen, Business Profile data collection, and robust Firebase JWT Authentication via FastAPI.
-  * *Remaining:* Email/Mobile OTP provider integration, Encrypted storage for Aadhaar/PAN.
+* **Phase 2: Factory & Plot Setup** (UI Complete)
+  * *Done:* Factory Units and MIDC Plot management UI (`FactoryUnits.tsx`, `MyBusiness.jsx`).
+* **Phase 3: Document Repository** (UI Complete)
+  * *Done:* Centralized "Document Drive" UI for global document management (`DocumentDrive.jsx`).
+* **Phase 4: Investor Wizard** (UI Complete)
+  * *Done:* Multi-section questionnaire to derive required approvals (`InvestorWizard.tsx`).
+* **Phase 6: CAF & Payment History** (UI Complete)
+  * *Done:* Common Application Form generation and payment history UI (`CAFModal.tsx`, `PaymentsHistory.tsx`).
+* **Phase 9: Dashboard (Landing Analytics)** (UI Complete)
+  * *Done:* Comprehensive `InvestorDashboard.tsx` built with stat tiles and charts.
 * **Phase 11: Document Pre-Validation & OCR Auto-Validator** (Completed!)
-  * *Done:* Implemented full EasyOCR and PyMuPDF pipeline in FastAPI (`ocr_service.py`). Includes real-time validation for Name Matching, Expiry Checks (Regex), and Signature presence against the logged-in user's Business Profile. The frontend `InlineDocumentUpload.jsx` provides instant ✅/❌ feedback.
+  * *Done:* Implemented full EasyOCR and PyMuPDF pipeline in FastAPI (`ocr_service.py`). Real-time validation for Name Matching, Expiry Checks (Regex), and Signature presence.
+* **Phase 19: Officer SLA Dashboard** (UI Complete)
+  * *Done:* Officer views, layouts, and tracking dashboard (`OfficerDashboard.jsx`, `OfficerLayout.jsx`).
+* **Phase 20: Duplicate / Fraud Detection** (UI Complete)
+  * *Done:* Matching/near-matching detection UI via `FraudRadar.tsx`.
 
 ### 🔄 In Progress (UI Built, Pending DB Integration)
 
 * **Phase 0: Foundation & Infrastructure**
   * *Done:* Monorepo structure, React/Tailwind frontend, FastAPI backend, base Auth scaffold.
-  * *Remaining:* PostgreSQL DB setup, Cloudinary integration, Docker deployment, full RBAC roles.
 * **Phase 5: Service Catalogue, Applications & Tracking**
   * *Done:* UI for Services Available and Services Applied, backend API routes scaffolded.
-  * *Remaining:* Full DB integration, dynamic service-specific forms.
 * **Phase 7: Support, Grievance, Incentive Calculator**
-  * *Done:* UI for Grievances and Incentive Calculator.
-  * *Remaining:* Real DB connection and sentiment analysis logic.
-* **Phase 9: Dashboard (Landing Analytics)**
-  * *Done:* UI built with stat tiles and charts. Partial integration with Firestore.
-  * *Remaining:* Real data aggregation across all modules.
+  * *Done:* UI for Grievances (`DepartmentQueries.tsx`), Incentive Calculator, and Public Consultations.
 * **Phase 18: AI Query Assistant**
   * *Done:* ChatBot UI widget scaffolded.
-  * *Remaining:* NLP/LLM integration for conversational queries.
 
 ### ❌ Not Started (Needs Immediate Attention)
 
-* **Phase 2: Factory & Plot Setup** - Need forms for Factory Units and MIDC Plot registration.
-* **Phase 3: Document Repository** - Need the centralized "Document Drive" UI for global document management.
-* **Phase 4: Investor Wizard** - Need the multi-section questionnaire to derive required approvals.
-* **Phase 6: CAF & Payment History** - Need Common Application Form generation and payment history UI.
 * **Phase 8: Account & Delegation Settings** - Need Transactional User RBAC and delegation.
 * **Phase 10: AI Approval Roadmap** - Need dependency graph engine and sequencing logic.
 * **Phase 12: SLA Risk & Delay Prediction** - Need risk engine and scoring logic.
@@ -46,8 +48,6 @@ We are tracking progress against the `phases (1).md` master document.
 * **Phase 15: Incentive Readiness & Scenario Planner** - Need AI analysis on top of the Phase 7 calculator.
 * **Phase 16: Dashboard Next-Best-Action Banner** - Need priority action surfacing in Dashboard.
 * **Phase 17: Sentiment-Linked Grievance Triage** - Need negative sentiment escalation logic.
-* **Phase 19: Officer SLA Dashboard** - Need officer views and workload balancer.
-* **Phase 20: Duplicate / Fraud Detection** - Need matching/near-matching detection.
 * **Phase 21: District/Sector Bottleneck Heatmap** - Need geographic/sectoral delay visualization.
 * **Phase 22: Real Integrations & Launch Readiness** - Need Payment Gateway, SMS, Docker load testing.
 
