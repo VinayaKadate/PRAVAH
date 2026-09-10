@@ -6,19 +6,17 @@ import { T } from "../../constants/translations";
 import { Btn } from "../common/Btn";
 import { AccessibilityBar } from "../accessibility/AccessibilityBar";
 import { useAuth } from "../../contexts/AuthContext";
-import { auth } from "../../firebase";
-import { signOut } from "firebase/auth";
 import { useTranslation } from "../../contexts/TranslationContext";
 
 export function Header({ a11y, setA11y }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const { t } = useTranslation();
   
   const handleSignOut = () => {
-    signOut(auth);
+    logout();
     navigate('/');
   };
   
