@@ -8,17 +8,9 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        // Simulate network delay
-        await new Promise(r => setTimeout(r, 600));
-        setCurrentUser({
-          id: 1,
-          email: "demo@pravah.com",
-          full_name: "Demo Investor",
-          role: "investor"
-        });
-      }
+      // Force logout on every fresh open of the app as per user request
+      localStorage.removeItem('token');
+      setCurrentUser(null);
       setLoading(false);
     };
     checkAuth();

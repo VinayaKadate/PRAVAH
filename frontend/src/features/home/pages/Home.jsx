@@ -17,7 +17,7 @@ const FEATURES = [
   { icon: Headphones, title: "Investor handholding", body: "A relationship manager from first enquiry through land, power, water and commissioning." },
 ];
 
-import { Clock } from "lucide-react"; // moved up
+import { Clock, Smartphone, Download } from "lucide-react"; // moved up
 
 function Hero() {
   const { t } = useTranslation();
@@ -197,6 +197,43 @@ function WhyMaharashtra() {
   );
 }
 
+function AppDownload() {
+  return (
+    <div className="px-4 py-16" style={{ background: C.white, borderTop: `1px solid ${C.line}` }}>
+      <div className="max-w-6xl mx-auto rounded-3xl overflow-hidden shadow-xl" style={{ background: C.navyDeep, color: C.white }}>
+        <div className="flex flex-col md:flex-row items-stretch">
+          <div className="p-8 md:p-12 lg:p-16 md:w-2/3 flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 self-start" style={{ background: "rgba(255,255,255,0.1)", color: C.saffron }}>
+              <Smartphone size={16} /> <span className="text-sm font-bold tracking-wider uppercase">Mobile Experience</span>
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Download the PRAVAH App</h2>
+            <p className="text-lg opacity-80 leading-relaxed mb-8 max-w-xl">
+              Take your business approvals on the go. Track applications, respond to queries, and receive instant push notifications from the palm of your hand.
+            </p>
+            <a href="/pravah.apk" download="Pravah_App.apk" className="self-start">
+              <div className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-bold shadow-lg transition-transform hover:-translate-y-1" style={{ background: C.saffron, color: C.white }}>
+                <Download size={20} /> Download APK
+              </div>
+            </a>
+          </div>
+          <div className="md:w-1/3 p-8 flex items-center justify-center bg-black/20 min-h-[300px]">
+             <div className="w-40 h-[320px] border-8 border-gray-400 rounded-[2rem] p-3 relative shadow-2xl bg-black">
+               <div className="absolute top-0 inset-x-0 h-4 flex justify-center">
+                 <div className="w-16 h-3 bg-gray-400 rounded-b-xl"></div>
+               </div>
+               <div className="w-full h-full rounded-xl flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: C.navyDeep }}>
+                 <div className="absolute inset-0 opacity-20" style={{ background: `linear-gradient(135deg, ${C.saffron} 0%, transparent 100%)` }}></div>
+                 <Landmark size={48} color={C.white} className="mb-4 relative z-10" />
+                 <div className="text-white font-black text-xl tracking-tight relative z-10">PRAVAH <span style={{ color: C.saffron }}>2.0</span></div>
+               </div>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Notices() {
   const notices = [
     "Extension of deadline for filing PSI 2019 claims for FY 25-26",
@@ -235,6 +272,7 @@ export function Home() {
       <StatsBand />
       <Features />
       <WhyMaharashtra />
+      <AppDownload />
       <Notices />
     </>
   );
