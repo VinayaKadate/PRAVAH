@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Loader2, AlertTriangle, CheckCircle2, XCircle, Clock, ShieldAlert, Cpu } from "lucide-react";
 import { SectionHead } from "../../../components/common/SectionHead";
 import { Btn } from "../../../components/common/Btn";
-import apiClient from "../../../api/client";
 
 export function OfficerDashboard() {
   const [activeTab, setActiveTab] = useState("workload");
@@ -10,16 +9,11 @@ export function OfficerDashboard() {
 
   useEffect(() => {
     const fetchQueue = async () => {
-      try {
-        const res = await apiClient.get('/officer/queue');
-        setQueue(res.data);
-      } catch (err) {
-        console.error("Failed to fetch queue", err);
-        // Fallback demo data
-        setQueue([
-          { id: "MTR/2026/001", service_name: "Fire NOC", applicant_name: "Sahyadri Precision", urgency: "critical", ai_score: 4.8, status: "pending" }
-        ]);
-      }
+      // Simulate network request
+      await new Promise(r => setTimeout(r, 800));
+      setQueue([
+        { id: "MTR/2026/001", service_name: "Fire NOC", applicant_name: "Sahyadri Precision", urgency: "critical", ai_score: 4.8, status: "pending" }
+      ]);
     };
     fetchQueue();
   }, []);

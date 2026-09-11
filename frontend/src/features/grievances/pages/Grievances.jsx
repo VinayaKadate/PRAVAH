@@ -4,7 +4,6 @@ import { SectionHead } from "../../../components/common/SectionHead";
 import { Field } from "../../../components/common/Field";
 import { Btn } from "../../../components/common/Btn";
 import { C, inputCls, inputStyle } from "../../../constants/theme";
-import apiClient from "../../../api/client";
 
 export function Grievances() {
   const [f, setF] = useState({ name: "", email: "", dept: "", appId: "", detail: "" });
@@ -14,9 +13,17 @@ export function Grievances() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    apiClient.get("/services/")
-      .then(res => setDepts(res.data.data.map(g => g.dept)))
-      .catch(err => console.error("Failed to load departments"));
+    // Mock loading departments
+    setTimeout(() => {
+      setDepts([
+        "Directorate of Industries",
+        "MIDC",
+        "MPCB",
+        "Energy Department",
+        "Labour Department",
+        "Fire Department"
+      ]);
+    }, 400);
   }, []);
 
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
@@ -29,12 +36,8 @@ export function Grievances() {
     setSubmitting(true);
     setError(null);
     try {
-      await apiClient.post("/grievances/", {
-        name: f.name,
-        email: f.email,
-        department: f.dept,
-        issue: f.detail
-      });
+      // Simulate network request
+      await new Promise(r => setTimeout(r, 1200));
       setSent(true);
     } catch (err) {
       setError("Failed to submit grievance. Please try again.");

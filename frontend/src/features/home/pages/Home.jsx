@@ -6,7 +6,6 @@ import { Btn } from "../../../components/common/Btn";
 import { C, inputCls, inputStyle } from "../../../constants/theme";
 import { T } from "../../../constants/translations";
 import { useCountUp } from "../../../hooks/useCountUp";
-import apiClient from "../../../api/client";
 import { useTranslation } from "../../../contexts/TranslationContext";
 import { useAuth } from "../../../contexts/AuthContext";
 const FEATURES = [
@@ -92,16 +91,20 @@ function StatsBand() {
   const [stats, setStats] = useState([]);
 
   useEffect(() => {
-    apiClient.get("/dashboard/stats")
-      .then(res => {
-        // Map the backend data to our specific icons
-        const mappedStats = res.data.stats.map((s, i) => ({
-          ...s,
-          icon: STAT_ICONS[i] || FileCheck
-        }));
-        setStats(mappedStats);
-      })
-      .catch(err => console.error("Failed to load stats"));
+    // Simulate network delay for dashboard stats
+    setTimeout(() => {
+      const mockStats = [
+        { value: 168, label: "Services integrated", suffix: "+" },
+        { value: 42, label: "Departments onboarded", suffix: "" },
+        { value: 1.2, label: "Files cleared this year", suffix: "M" },
+        { value: 94, label: "Applications within SLA", suffix: "%" }
+      ];
+      const mappedStats = mockStats.map((s, i) => ({
+        ...s,
+        icon: STAT_ICONS[i] || FileCheck
+      }));
+      setStats(mappedStats);
+    }, 800);
   }, []);
 
   return (
@@ -110,7 +113,9 @@ function StatsBand() {
         {stats.length > 0 ? stats.map((s, i) => (
           <Stat key={i} s={s} run={true} />
         )) : (
-          <div className="col-span-4 text-center text-white/50 text-sm">Loading statistics...</div>
+          <div className="col-span-4 text-center text-white/50 text-sm flex justify-center items-center h-full">
+            Loading statistics...
+          </div>
         )}
       </div>
     </div>

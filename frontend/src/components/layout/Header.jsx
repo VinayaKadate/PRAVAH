@@ -181,7 +181,7 @@ export function Header({ a11y, setA11y }) {
               <button
                 key={item.path}
                 onClick={() => go(item.path)}
-                className="is-link px-4 py-3 text-sm font-medium transition-colors"
+                className="is-link px-4 py-3 text-sm font-medium transition-all hover:bg-white/5 hover:text-white"
                 style={{
                   color: currentPath === item.path ? C.white : "#BFD4E8",
                   background: currentPath === item.path ? C.navySoft : "transparent",

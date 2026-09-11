@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Award, Calculator, CheckCircle, Sparkles, Settings2, Download, Play, Percent, Map } from 'lucide-react';
 import { useMockApp } from '../../../contexts/MockAppContext';
+import { C, inputCls, inputStyle } from "../../../constants/theme";
+
 export const IncentiveCalculator = ({ _onApplyForScheme }) => {
   const { schemes } = useMockApp();
   const [investmentCr, setInvestmentCr] = useState(450);
@@ -75,21 +77,21 @@ export const IncentiveCalculator = ({ _onApplyForScheme }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 sm:p-8 rounded shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6" style={{ background: C.white, border: `1px solid ${C.line}` }}>
         <div>
-          <div className="flex items-center space-x-2 text-blue-600 font-bold text-xs uppercase tracking-wider mb-1">
+          <div className="flex items-center space-x-2 font-bold text-xs uppercase tracking-wider mb-2" style={{ color: C.navy }}>
             <Award size={16} />
-            <span>Government Benefit & Scheme Readiness (UdyogSetu Feature #6)</span>
+            <span>Government Benefit & Scheme Readiness</span>
           </div>
-          <h2 className="text-2xl font-black text-slate-900">Package Scheme of Incentives (PSI) Calculator</h2>
-          <p className="text-slate-600 text-xs mt-1">
+          <h2 className="text-3xl font-black mb-2" style={{ color: C.ink }}>Package Scheme of Incentives (PSI) Calculator</h2>
+          <p className="text-sm leading-relaxed max-w-3xl" style={{ color: C.slate }}>
             Instant statutory calculation of Gross SGST refund (IPS), electricity duty waiver, and capital subsidy under Maharashtra Industrial Policy.
           </p>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-xs text-blue-950 font-bold">
-          <span className="block text-[10px] text-blue-600 uppercase">Estimated Total State Subsidy</span>
-          <span className="text-2xl font-black text-blue-900">₹ {calculations.totalBenefitValueCr} Crores</span>
+        <div className="border p-5 rounded text-center shrink-0 min-w-[200px]" style={{ background: C.saffronLight, borderColor: 'rgba(232, 119, 34, 0.2)' }}>
+          <span className="block text-xs uppercase font-bold mb-1" style={{ color: C.saffron }}>Estimated State Subsidy</span>
+          <span className="text-3xl font-black" style={{ color: C.saffron }}>₹ {calculations.totalBenefitValueCr} Cr</span>
         </div>
       </div>
 
@@ -97,16 +99,16 @@ export const IncentiveCalculator = ({ _onApplyForScheme }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Input Parameters */}
-        <div className="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <h3 className="font-extrabold text-sm text-slate-900 flex items-center">
-            <Calculator size={16} className="mr-2 text-blue-600" />
+        <div className="lg:col-span-1 p-6 rounded shadow-sm space-y-6" style={{ background: C.white, border: `1px solid ${C.line}` }}>
+          <h3 className="font-extrabold text-sm flex items-center" style={{ color: C.ink }}>
+            <Calculator size={18} className="mr-2" style={{ color: C.navy }} />
             Project Parameters
           </h3>
 
           <div>
-            <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+            <div className="flex justify-between text-xs font-bold mb-2" style={{ color: C.ink }}>
               <span>Proposed Capital Investment</span>
-              <span className="text-blue-600 font-black">₹ {investmentCr} Crores</span>
+              <span className="font-black" style={{ color: C.navy }}>₹ {investmentCr} Crores</span>
             </div>
             <input
               type="range"
@@ -115,125 +117,128 @@ export const IncentiveCalculator = ({ _onApplyForScheme }) => {
               step={25}
               value={investmentCr}
               onChange={(e) => setInvestmentCr(Number(e.target.value))}
-              className="w-full accent-blue-600"
+              className="w-full"
+              style={{ accentColor: C.navy }}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Taluka Classification (Group)</label>
+            <label className="block text-xs font-bold mb-2" style={{ color: C.ink }}>Taluka Classification (Group)</label>
             <select
               value={talukaCategory}
               onChange={(e) => setTalukaCategory(e.target.value )}
-              className="w-full border border-slate-300 rounded-xl p-2.5 text-xs font-bold bg-white"
+              className={inputCls} style={inputStyle}
             >
-              <option value="A">Group A - Highly Developed (MMR, Pune City) - No IPS</option>
-              <option value="B">Group B - Moderately Developed (Thane, Pimpri)</option>
-              <option value="C">Group C - Developing (Chakan, Dindori, Waluj) - 75% SGST</option>
-              <option value="D">Group D - Less Developed (Khed, Sinnar, Baramati) - 90% SGST</option>
-              <option value="D+">Group D+ - Least Developed / Naxal Affected - 100% SGST</option>
+              <option value="A">Group A - Highly Developed (No IPS)</option>
+              <option value="B">Group B - Moderately Developed</option>
+              <option value="C">Group C - Developing (75% SGST)</option>
+              <option value="D">Group D - Less Developed (90% SGST)</option>
+              <option value="D+">Group D+ - Least Developed (100% SGST)</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Direct Employment</label>
+            <label className="block text-xs font-bold mb-2" style={{ color: C.ink }}>Direct Employment</label>
             <input
               type="number"
               value={employment}
               onChange={(e) => setEmployment(Number(e.target.value))}
-              className="w-full border border-slate-300 rounded-xl p-2.5 text-xs font-bold bg-white"
+              className={inputCls} style={inputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Industry Vertical</label>
+            <label className="block text-xs font-bold mb-2" style={{ color: C.ink }}>Industry Vertical</label>
             <select
               value={projectType}
               onChange={(e) => setProjectType(e.target.value )}
-              className="w-full border border-slate-300 rounded-xl p-2.5 text-xs font-bold bg-white"
+              className={inputCls} style={inputStyle}
             >
               <option value="Manufacturing">Manufacturing & Engineering</option>
-              <option value="Agro-processing">Agro & Food Processing (Additional 10% IPS)</option>
+              <option value="Agro-processing">Agro & Food Processing</option>
               <option value="IT / Electronics">IT, Data Centers & Electronics</option>
             </select>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="font-bold text-slate-700">SC/ST / Women Promoter?</span>
+          <div className="pt-4 border-t flex items-center justify-between text-sm font-bold" style={{ borderColor: C.line, color: C.ink }}>
+            <span>SC/ST / Women Promoter?</span>
             <input
               type="checkbox"
               checked={hasScStPromoter}
               onChange={(e) => setHasScStPromoter(e.target.checked)}
-              className="w-4 h-4 text-blue-600 rounded"
+              className="w-4 h-4 rounded"
+              style={{ accentColor: C.navy }}
             />
           </div>
         </div>
 
         {/* Calculated Breakdown */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-6 sm:p-8 rounded-2xl shadow-sm space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="p-6 sm:p-8 rounded shadow-sm space-y-6" style={{ background: C.white, border: `1px solid ${C.line}`, color: C.ink }}>
+            <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: C.line }}>
               <div>
-                <span className="text-[10px] uppercase tracking-wider font-bold text-indigo-300">Classified Tier</span>
-                <h3 className="text-xl font-black">{calculations.unitScale}</h3>
+                <span className="text-xs uppercase tracking-wider font-bold mb-1 block" style={{ color: C.saffron }}>Classified Tier</span>
+                <h3 className="text-3xl font-black">{calculations.unitScale}</h3>
               </div>
-              <span className="bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-xs font-black px-3 py-1 rounded-full">
-                Group {talukaCategory} Taluka
+              <span className="text-sm font-bold px-4 py-1.5 rounded-full" style={{ background: C.saffronLight, color: C.saffron }}>
+                Group {talukaCategory}
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10">
-                <span className="text-[10px] text-indigo-200 block font-bold">Gross SGST Refund (IPS)</span>
-                <span className="text-xl font-black text-white">₹ {calculations.totalPotentialRefundCr} Cr</span>
-                <span className="text-[10px] text-emerald-400 block mt-1">Over {calculations.tenureYears} Years</span>
+              <div className="p-5 rounded border" style={{ background: C.bg, borderColor: C.line }}>
+                <span className="text-xs block font-bold mb-1" style={{ color: C.slate }}>Gross SGST Refund (IPS)</span>
+                <span className="text-2xl font-black block mb-1" style={{ color: C.navyDeep }}>₹ {calculations.totalPotentialRefundCr} Cr</span>
+                <span className="text-xs font-bold" style={{ color: C.green }}>Over {calculations.tenureYears} Years</span>
               </div>
 
-              <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10">
-                <span className="text-[10px] text-indigo-200 block font-bold">Electricity Duty Exemption</span>
-                <span className="text-xl font-black text-white">₹ {calculations.electricityDutySavingsCr} Cr</span>
-                <span className="text-[10px] text-indigo-200 block mt-1">100% Waiver for 7 Yrs</span>
+              <div className="p-5 rounded border" style={{ background: C.bg, borderColor: C.line }}>
+                <span className="text-xs block font-bold mb-1" style={{ color: C.slate }}>Electricity Duty Exemption</span>
+                <span className="text-2xl font-black block mb-1" style={{ color: C.navyDeep }}>₹ {calculations.electricityDutySavingsCr} Cr</span>
+                <span className="text-xs font-bold" style={{ color: C.slate }}>100% Waiver for 7 Yrs</span>
               </div>
 
-              <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10">
-                <span className="text-[10px] text-indigo-200 block font-bold">Interest Subsidy (MSME/Spec)</span>
-                <span className="text-xl font-black text-white">₹ {calculations.interestSubsidyCr} Cr</span>
-                <span className="text-[10px] text-indigo-200 block mt-1">@ 5% on Term Loans</span>
+              <div className="p-5 rounded border" style={{ background: C.bg, borderColor: C.line }}>
+                <span className="text-xs block font-bold mb-1" style={{ color: C.slate }}>Interest Subsidy (MSME/Spec)</span>
+                <span className="text-2xl font-black block mb-1" style={{ color: C.navyDeep }}>₹ {calculations.interestSubsidyCr} Cr</span>
+                <span className="text-xs font-bold" style={{ color: C.slate }}>@ 5% on Term Loans</span>
               </div>
             </div>
 
-            <div className="text-xs text-indigo-200 bg-indigo-900/50 p-3 rounded-xl border border-indigo-700/50 flex items-start space-x-2">
-              <Sparkles size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
-              <span>
-                <strong>UdyogSetu AI Recommendation:</strong> File Form 1 eligibility application concurrently with your 
+            <div className="text-sm p-4 rounded flex items-start gap-3 mt-4 border" style={{ background: C.saffronLight, borderColor: 'rgba(232, 119, 34, 0.2)' }}>
+              <Sparkles size={18} style={{ color: C.saffron }} className="shrink-0 mt-0.5" />
+              <span className="leading-relaxed" style={{ color: C.ink }}>
+                <strong style={{ color: C.saffron }}>AI Recommendation:</strong> File Form 1 eligibility application concurrently with your 
                 Factory Building Plan Approval (APP-1004) to prevent delay in commercial production validation.
               </span>
             </div>
           </div>
 
           {/* Scheme Readiness Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {schemes.map((s) => (
-              <div key={s.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+              <div key={s.id} className="p-6 rounded shadow-sm space-y-4" style={{ background: C.white, border: `1px solid ${C.line}` }}>
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">{s.category}</span>
-                    <h4 className="font-extrabold text-sm text-slate-900 leading-snug">{s.title}</h4>
+                    <span className="text-[10px] font-bold uppercase tracking-wider mb-1 block" style={{ color: C.navy }}>{s.category}</span>
+                    <h4 className="font-bold text-base leading-snug" style={{ color: C.ink }}>{s.title}</h4>
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
-                    s.status === 'eligible' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
-                  }`}>
+                  <span className="px-2.5 py-1 rounded text-xs font-black shrink-0 ml-2" style={{ 
+                    background: s.status === 'eligible' ? C.greenLight : C.bg, 
+                    color: s.status === 'eligible' ? C.green : C.slate 
+                  }}>
                     {s.matchScore}% Match
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600">{s.benefit}</p>
+                <p className="text-sm leading-relaxed" style={{ color: C.slate }}>{s.benefit}</p>
 
                 {s.reasons && s.reasons.length > 0 && (
-                  <div className="space-y-1 bg-slate-50 p-2.5 rounded-xl text-[11px] text-slate-700 font-medium">
+                  <div className="space-y-2 p-3 rounded text-xs font-medium" style={{ background: C.bg, color: C.ink }}>
                     {s.reasons.map((r, i) => (
-                      <div key={i} className="flex items-start space-x-1.5">
-                        <CheckCircle size={12} className="text-emerald-600 flex-shrink-0 mt-0.5" />
-                        <span>{r}</span>
+                      <div key={i} className="flex items-start gap-2">
+                        <CheckCircle size={14} style={{ color: C.green }} className="shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{r}</span>
                       </div>
                     ))}
                   </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Shield, LayoutDashboard, Briefcase, FileWarning, Search, Menu, X, LogOut, Settings } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { C } from '../../../constants/theme';
 import { useAuth } from '../../../contexts/AuthContext';
 import { auth } from '../../../firebase';
@@ -84,9 +85,15 @@ export function OfficerLayout() {
 
         {/* Scrollable Page Content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6" style={{ background: C.bg }}>
-          <div className="p-4 sm:p-6 lg:p-8 bg-white rounded-2xl shadow-sm border border-gray-200 min-h-[calc(100vh-8rem)]">
+          <motion.div 
+            key={location.pathname}
+            initial={{ opacity: 0.4, scale: 0.99, y: 4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="p-4 sm:p-6 lg:p-8 bg-white rounded-2xl shadow-sm border border-gray-200 min-h-[calc(100vh-8rem)]"
+          >
             <Outlet />
-          </div>
+          </motion.div>
         </main>
       </div>
     </div>

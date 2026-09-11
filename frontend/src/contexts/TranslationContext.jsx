@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { T } from '../constants/translations';
-import apiClient from '../api/client';
 
 const TranslationContext = createContext();
 
@@ -10,11 +9,6 @@ export function useTranslation() {
 
 export function TranslationProvider({ children }) {
   const [lang, setLang] = useState('en');
-
-  // Update Axios default headers whenever language changes
-  useEffect(() => {
-    apiClient.defaults.headers.common['Accept-Language'] = lang;
-  }, [lang]);
 
   const t = T[lang] || T['en'];
 

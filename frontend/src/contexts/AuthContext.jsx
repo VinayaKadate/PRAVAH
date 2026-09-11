@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import apiClient from '../api/client';
 
 const AuthContext = createContext();
 
@@ -11,13 +10,14 @@ export function AuthProvider({ children }) {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
       if (token) {
-        try {
-          const res = await apiClient.get('/auth/me');
-          setCurrentUser(res.data);
-        } catch (error) {
-          console.error("Auth check failed:", error);
-          localStorage.removeItem('token');
-        }
+        // Simulate network delay
+        await new Promise(r => setTimeout(r, 600));
+        setCurrentUser({
+          id: 1,
+          email: "demo@pravah.com",
+          full_name: "Demo Investor",
+          role: "investor"
+        });
       }
       setLoading(false);
     };
@@ -25,14 +25,24 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const res = await apiClient.post('/auth/login', { email, password });
-    const { access_token } = res.data;
-    localStorage.setItem('token', access_token);
+    // Simulate network delay for real feel
+    await new Promise(r => setTimeout(r, 1200));
     
-    // Fetch user details
-    const userRes = await apiClient.get('/auth/me');
-    setCurrentUser(userRes.data);
-    return userRes.data;
+    // Hardcoded mock credentials
+    if (password !== "Pravah@2026!") {
+      throw new Error("Invalid credentials");
+    }
+
+    localStorage.setItem('token', 'mock_jwt_token_for_demo');
+    
+    const mockUser = {
+      id: 1,
+      email: email,
+      full_name: "Demo Investor",
+      role: "investor"
+    };
+    setCurrentUser(mockUser);
+    return mockUser;
   };
 
   const logout = () => {
